@@ -1,13 +1,16 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-
+import { WalletComponent } from './wallet/wallet.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  imports: [RouterOutlet, WalletComponent],
+  template: `
+    <router-outlet />
+    <app-wallet></app-wallet>
+  `,
+  styles: [],
 })
 export class AppComponent {
-  title = 'TerraClassicAngular';
+  title = 'Terra Classic on Angular';
 }
