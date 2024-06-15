@@ -3,5 +3,3 @@
 // //(window as any).process = {};
 
 global.Buffer = global.Buffer || require('buffer').Buffer;
-
-console.log ('polyfills loaded')
