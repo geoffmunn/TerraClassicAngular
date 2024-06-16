@@ -4,10 +4,8 @@ import { Pagination } from '@geoffmunn/feather.js/dist/client/lcd/APIRequester';
 import { RequestService } from '../services/request.service';
 import { CHAIN_DATA } from '../constants'
 import { HttpClient } from '@angular/common/http';
-
-//import { HttpClient, HttpClientModule, HttpHandler } from '@angular/common/http';
-
-
+import { BalancesService } from '../services/balances.service';
+import { WalletCoin } from '../interfaces/walletcoin';
 @Component({
   selector: 'app-wallet',
   standalone: true,
@@ -18,8 +16,9 @@ import { HttpClient } from '@angular/common/http';
 
 export class WalletComponent {
 
-  //http: any
+  address: string = '';
   denom: string = 'uluna';
+  balances: BalancesService;
 
   lcd: LCDClient;
 
@@ -56,41 +55,36 @@ export class WalletComponent {
       return denom_name;
   }
 
-  async getBalances(){
-    //const lcd = new LCDClient()
+  async getBalances(address: string): Promise<boolean> {
 
-    //console.log('config:', CHAIN_DATA.ULUNA)
-
-    // get the current balance of `terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v`
     // LCD understand automatically the chain to query using the bech32 prefix of the address
-    const balance:Promise<[Coins, Pagination]> = this.lcd.bank.balance(
-      'terra1kgge7tyctna52qfskpkw73xu4fhmd0y29ravr6'
-    );
+    const balance:Promise<[Coins, Pagination]> = this.lcd.bank.balance(address);
 
-
-    balance.then(async (name) => { 
+    await balance.then(async (name) => { 
       var coins:Coins = name[0];
 
       var coin_list = coins.toData()
 
-      //console.log(coins.toData())
       for (var i = 0; i < coin_list.length; i++){
-        console.log ('getting denom for', coin_list[i].denom)
-        var denom_result = await this.denomTrace(coin_list[i].denom).then ((name) => {
+        var denom_result: string = await this.denomTrace(coin_list[i].denom).then ((name) => {
           return name
         })
 
-        console.log ('denom:', denom_result, 'amount:', coin_list[i].amount)
+        var coin: WalletCoin = {
+          amount: Number(coin_list[i].amount),
+          name: denom_result,
+          readable: 'bitcoin'
+        }
+
+        this.balances.balances.set(denom_result, coin)
       }
     })
   
-
+    return true
   }
 
   constructor(private http: HttpClient){
     // connect to mainnet
-    
-    //this.http = http
     
     var config = {
       'columbus-5': {
@@ -101,11 +95,15 @@ export class WalletComponent {
         prefix: 'terra', // bech32 prefix, used by the LCD to understand which is the right chain to query
       },
     }
-
     this.lcd = new LCDClient(config)
 
+    this.address = 'terra1kgge7tyctna52qfskpkw73xu4fhmd0y29ravr6';
 
-    this.getBalances()
+    // Instantiate a balance object
+    this.balances = new BalancesService()
+
+    // Load the balances for this address
+    this.getBalances(this.address);
     
   }
 }

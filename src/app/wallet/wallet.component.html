@@ -1,1 +1,7 @@
 <p>wallet works!</p>
+
+<div>
+@for (balance of balances.balances; track balances) {
+    <p>{{balance[0]}}, {{balance[1].readable}} - {{balance[1].amount}}</p>
+}
+</div>
