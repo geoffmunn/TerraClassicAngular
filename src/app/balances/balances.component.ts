@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { LCDClient, Coin, Coins } from '@geoffmunn/feather.js';
 import { Pagination } from '@geoffmunn/feather.js/dist/client/lcd/APIRequester';
 import { RequestService } from '../services/request.service';
-import { CHAIN_DATA } from '../constants'
+import { CHAIN_DATA, COIN_CODES } from '../constants'
 import { HttpClient } from '@angular/common/http';
 import { BalancesService } from '../services/balances.service';
 import { WalletCoin } from '../interfaces/walletcoin';
@@ -44,7 +44,7 @@ export class BalancesComponent {
 
       // We will use the uri as the key, just to make sure there are no collisions
       var value: string = ibc_address.slice(4);
-      var chain_name: string = CHAIN_DATA['ULUNA']['cosmos_name']
+      var chain_name: string = CHAIN_DATA[COIN_CODES.ULUNA]['cosmos_name']
       var uri: string        = 'https://rest.cosmos.directory/' + chain_name + '/ibc/apps/transfer/v1/denom_traces/' + value
 
       // var result = new RequestService().testtest(uri)
