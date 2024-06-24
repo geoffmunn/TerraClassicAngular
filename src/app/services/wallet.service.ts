@@ -24,9 +24,15 @@ export class WalletService {
   getAllWallets(): Wallet[] {
     return this.walletList;
   }
-  
+
   getWalletById(id: number): Wallet | undefined {
     return this.walletList.find((wallet) => wallet.id === id);
+  }
+
+  submitApplication(firstName: string, lastName: string, email: string) {
+    console.log(
+      `Homes application received: firstName: ${firstName}, lastName: ${lastName}, email: ${email}.`,
+    );
   }
 
   constructor() { }

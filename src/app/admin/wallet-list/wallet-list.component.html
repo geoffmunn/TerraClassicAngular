@@ -1,14 +1,15 @@
 <section>
     <form>
-        <input type="text" placeholder="Filter by city" />
-        <button class="primary" type="button">Search</button>
+        <input type="text" placeholder="Filter by city" #filter>
+        <button class="primary" type="button" (click)="filterResults(filter.value)">Search</button>
     </form>
 </section>
 
 <section class="results">
-    <app-wallet-item
+    <!-- <app-wallet-item
       *ngFor="let wallet of walletList"
       [wallet]="wallet"
-    ></app-wallet-item>
+    ></app-wallet-item> -->
+    <app-wallet-item *ngFor="let wallet of filteredWalletList" [wallet]="wallet"></app-wallet-item>
 </section>
 

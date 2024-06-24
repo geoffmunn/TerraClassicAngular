@@ -16,8 +16,21 @@ export class WalletListComponent {
   
   walletList: Wallet[]
 
+  filteredWalletList: Wallet[] = [];
+
+  filterResults(text: string) {
+    if (!text) {
+      this.filteredWalletList = this.walletList;
+      return;
+    }
+    this.filteredWalletList = this.walletList.filter((walletItem) =>
+      walletItem?.name.toLowerCase().includes(text.toLowerCase()),
+    );
+  }
+
   constructor() {
     this.walletList = this.walletService.getAllWallets();
+    this.filteredWalletList = this.walletList;
   }
   
 }
