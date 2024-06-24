@@ -1,0 +1,8 @@
+<section class="listing">
+<ul>
+    <li>{{ wallet.name }}</li>
+    <li>{{ wallet.address }}</li>
+    <li>{{ wallet.seed }}</li>
+    <li><a [routerLink]="['/details', wallet.id]">Learn More</a></li>
+</ul>
+</section>
