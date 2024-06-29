@@ -3,13 +3,15 @@ import { WalletItemComponent } from '../../wallet-item/wallet-item.component';
 import { Wallet } from '../../interfaces/wallet';
 import { CommonModule } from '@angular/common';
 import { WalletService } from '../../services/wallet.service';
+import { NewWalletComponent } from '../new-wallet/new-wallet.component';
 @Component({
   selector: 'app-wallet-list',
   standalone: true,
-  imports: [CommonModule, WalletItemComponent],
+  imports: [CommonModule, WalletItemComponent, NewWalletComponent],
   templateUrl: './wallet-list.component.html',
   styleUrl: './wallet-list.component.css'
 })
+
 export class WalletListComponent {
 
   walletService: WalletService = inject(WalletService);

@@ -5,11 +5,12 @@
     </form>
 </section>
 
+
+<app-new-wallet></app-new-wallet>
+
+
+
 <section class="results">
-    <!-- <app-wallet-item
-      *ngFor="let wallet of walletList"
-      [wallet]="wallet"
-    ></app-wallet-item> -->
     <app-wallet-item *ngFor="let wallet of filteredWalletList" [wallet]="wallet"></app-wallet-item>
 </section>
 
