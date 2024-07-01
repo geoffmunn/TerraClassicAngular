@@ -1,8 +1,7 @@
 import {Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, RouterModule} from '@angular/router';
 import { WalletService } from '../services/wallet.service';
-import { WalletItemComponent } from '../wallet-item/wallet-item.component';
 import { Wallet } from '../interfaces/wallet';
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 
@@ -12,7 +11,7 @@ import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 @Component({
   selector: 'app-details',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './details.component.html',
   styleUrl: './details.component.css'
 })

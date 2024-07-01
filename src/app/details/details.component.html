@@ -4,6 +4,8 @@
     <li>Wallet name: {{ walletItem?.name }}</li>
     <li>Wallet address: {{ walletItem?.address }}</li>
     <li>Wallet seed: {{ walletItem?.seed }}</li>
+
+    <li><a [routerLink]="['/delete', walletItem?.id]">Delete</a></li>
 </ul>
 
 <section class="listing-apply">

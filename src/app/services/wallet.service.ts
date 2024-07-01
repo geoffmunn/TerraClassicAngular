@@ -34,12 +34,34 @@ export class WalletService {
   }
 
   /**
+   * Go through all the wallets and rebuild the list minus the id of the wallet we don't want.
+   * 
+   * @param id 
+   * @returns boolean
+   */
+  public deleteWalletByID(id: number): boolean {
+
+    var new_list: Wallet[] = [];
+
+    this.wallet_list.forEach(function(wallet){
+      if (wallet.id != id){
+        new_list.push(wallet);
+      }
+    })
+    
+    this.wallet_list = new_list;
+    this.local_storage.saveData('wallets', this.encrypt(JSON.stringify(this.wallet_list)));
+
+    return true;
+  }
+
+  /**
    * Get all the wallets in the local storage object
    * If none exist, return an empty array
    * 
    * @returns array
    */
-  getAllWallets(): Wallet[] {
+  public getAllWallets(): Wallet[] {
     let local_storage = new LocalstorageService()
     let wallets:Wallet[] = []
 
@@ -60,7 +82,7 @@ export class WalletService {
    * 
    * @returns number
    */
-  getNextWalletID(): number {
+  private getNextWalletID(): number {
     let wallet_id: number = 1
 
     let current_wallets:Wallet[] = this.getAllWallets();
@@ -78,7 +100,7 @@ export class WalletService {
    * @param id 
    * @returns Wallet or undefined if target does not exist
    */
-  getWalletById(id: number): Wallet | undefined {
+  public getWalletById(id: number): Wallet | undefined {
     return this.wallet_list.find((wallet) => wallet.id === id);
   }
 
@@ -103,7 +125,7 @@ export class WalletService {
    * 
    * @return true
    */
-  newWallet(wallet_name: string, wallet_address: string, wallet_seed: string): boolean{
+  public newWallet(wallet_name: string, wallet_address: string, wallet_seed: string): boolean{
     
     const wallet_id: number = this.getNextWalletID();
     this.wallet_list.push({'id': wallet_id, 'name': wallet_name, 'address': wallet_address, 'seed': wallet_seed})    

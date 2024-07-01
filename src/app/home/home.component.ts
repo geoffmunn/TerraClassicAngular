@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { BalancesComponent } from '../balances/balances.component';
-import { WalletListComponent } from '../admin/wallet-list/wallet-list.component';@Component({
+import { WalletService } from '../services/wallet.service';
+import { WalletListComponent } from '../admin/wallet-list/wallet-list.component';import { ActivatedRoute, Router } from '@angular/router';
+@Component({
   selector: 'app-home',
   standalone: true,
   imports: [BalancesComponent, WalletListComponent],
@@ -10,4 +12,23 @@ import { WalletListComponent } from '../admin/wallet-list/wallet-list.component'
 
 export class HomeComponent {
 
+  private route: ActivatedRoute = inject(ActivatedRoute);
+  private walletService = inject(WalletService);
+
+  constructor(private router: Router,){
+    if(this.route.snapshot.url.length > 0){
+      const action: string = this.route.snapshot.url[0].path.toLowerCase();
+      const wallet_id: number = Number(this.route.snapshot.params['id']);
+
+      console.log ('action:', action)
+      console.log ('wallet id:', wallet_id)
+
+      this.walletService.deleteWalletByID(wallet_id)
+
+      this.router.navigate([''])
+
+    }
+
+    
+  }
 }

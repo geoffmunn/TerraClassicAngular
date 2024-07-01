@@ -32,6 +32,7 @@ export class WalletListComponent {
 
   constructor() {
     this.walletList = this.walletService.getAllWallets();
+
     this.filteredWalletList = this.walletList;
   }
   

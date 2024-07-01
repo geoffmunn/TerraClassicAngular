@@ -11,6 +11,12 @@ export const routes: Routes = [
     {
         path: 'details/:id',
         component: DetailsComponent,
-        title: 'Home details',
+        title: 'Wallet details',
     },
+    {
+        path: 'delete/:id',
+        component: HomeComponent,
+        title: 'Home page',
+    },
+
 ];
