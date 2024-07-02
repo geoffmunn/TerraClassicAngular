@@ -33,11 +33,11 @@ export class DetailsComponent {
     this.walletItem = this.walletService.getWalletById(walletID);
   }
 
-  submitApplication() {
-    this.walletService.submitApplication(
-      this.applyForm.value.firstName ?? '',
-      this.applyForm.value.lastName ?? '',
-      this.applyForm.value.email ?? '',
-    );
-  }
+  // submitApplication() {
+  //   this.walletService.submitApplication(
+  //     this.applyForm.value.firstName ?? '',
+  //     this.applyForm.value.lastName ?? '',
+  //     this.applyForm.value.email ?? '',
+  //   );
+  // }
 }

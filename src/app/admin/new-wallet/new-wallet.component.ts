@@ -11,9 +11,9 @@ import { CommonModule } from '@angular/common';
   styleUrl: './new-wallet.component.css'
 })
 export class NewWalletComponent {
-  //route: ActivatedRoute = inject(ActivatedRoute);
+  
   walletService = inject(WalletService);
-  //walletItem: Wallet | undefined;
+  walletAddress: string = '';
 
   newWalletForm = new FormGroup({
     walletName: new FormControl(''),
@@ -21,10 +21,7 @@ export class NewWalletComponent {
     walletSeed: new FormControl(''),
   });
 
-  constructor() {
-    //const walletID = Number(this.route.snapshot.params['id']);
-    //this.walletItem = this.walletService.getWalletById(walletID);
-  }
+  constructor() {}
 
   newWallet() {
     this.walletService.newWallet(
@@ -32,5 +29,9 @@ export class NewWalletComponent {
       this.newWalletForm.value.walletAddress ?? '',
       this.newWalletForm.value.walletSeed ?? '',
     );
+  }
+
+  generateAddress($event: any){
+    this.walletAddress = this.walletService.createAddressFromSeed($event.target.value)
   }
 }

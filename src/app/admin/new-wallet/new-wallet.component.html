@@ -3,10 +3,11 @@
     <form [formGroup]="newWalletForm" (submit)="newWallet()">
         <label for="wallet-name">Wallet Name</label>
         <input id="wallet-name" type="text" formControlName="walletName" />
-        <label for="wallet-address">Wallet address</label>
-        <input id="wallet-address" type="text" formControlName="walletAddress" />
         <label for="wallet-seed">Wallet seed</label>
-        <input id="wallet-seed" type="text" formControlName="walletSeed" />
+        <input id="wallet-seed" type="text" formControlName="walletSeed" (change)="generateAddress($event)" />
+        <label for="wallet-address">Wallet address</label>
+        <input id="wallet-address" type="text" formControlName="walletAddress" [value]="walletAddress" />
+        
         <button type="submit" class="primary">Add wallet</button>
     </form>
 </section>
