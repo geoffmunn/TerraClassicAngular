@@ -18,7 +18,7 @@ import { WalletService } from '../services/wallet.service';
 
 export class BalancesComponent {
 
-  balances: any;
+  balances?: BalancesService;
 
   async getBalances(address: string){
     var wallet = new WalletService(this.http)

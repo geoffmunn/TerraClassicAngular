@@ -6,7 +6,7 @@ import { LCDClient, Coin, Coins, MnemonicKey } from '@geoffmunn/feather.js';
 import { Pagination } from '@geoffmunn/feather.js/dist/client/lcd/APIRequester';
 import { WalletCoin } from '../interfaces/walletcoin';
 import { RequestService } from './request.service';
-import { CHAIN_DATA, COIN_CODES } from '../constants'
+import { CHAIN_DATA, COIN_CODES, FULL_COIN_LOOKUP } from '../constants'
 import { BalancesService } from './balances.service';
 import { HttpClient } from '@angular/common/http';
 
@@ -159,13 +159,17 @@ export class WalletService {
           return name
         })
 
-        var coin: WalletCoin = {
-          amount: Number(coin_list[i].amount),
-          name: denom_result,
-          readable: 'bitcoin'
-        }
+        let key = Object.keys(COIN_CODES).find(key => COIN_CODES[key] === denom_result);
+        console.log ('readable denom:', denom_result, key)
+        if (key !== undefined){
+          var coin: WalletCoin = {
+            amount: Number(coin_list[i].amount),
+            name: denom_result,
+            readable: FULL_COIN_LOOKUP[key!]
+          }
 
-        this.balances.balances.set(denom_result, coin)
+          this.balances.balances.set(denom_result, coin)
+        }
       }
     })
 
@@ -220,6 +224,8 @@ export class WalletService {
   }
 
   constructor(private http: HttpClient) {
+
+    //return Object.keys(object).find(key => object[key] === value);
 
     var config = {
       'columbus-5': {
