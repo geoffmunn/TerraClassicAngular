@@ -1,3 +1,31 @@
+// Swap contracts can be found here
+// https://assets.terra.money/cw20/pairs.dex.json
+export const NON_ULUNA_COINS: any = {
+    //TERRASWAP_UUSD_TO_ULUNA_ADDRESS   : 'terra1l7vy20x940je7lskm6x9s839vjsmekz9k9mv7g',
+    //KUJI_SMART_CONTACT_ADDRESS        : 'terra1xfsdgcemqwxp4hhnyk4rle6wr22sseq7j07dnn',
+    //TERRASWAP_UKRW_TO_ULUNA_ADDRESS   : 'terra1erfdlgdtt9e05z0j92wkndwav4t75xzyapntkv',
+    //TERRASWAP_ULUNA_TO_UUSD_ADDRESS   : 'terra1l7vy20x940je7lskm6x9s839vjsmekz9k9mv7g',
+    BASE_SMART_CONTRACT_ADDRESS       : 'terra1uewxz67jhhhs2tj97pfm2egtk7zqxuhenm4y4m',
+    //GRDX_SMART_CONTRACT_ADDRESS       : 'terra1mkl973d34jsuv0whsfl43yw3sktm8kv7lgn35fhe6l88d0vvaukq5nq929',
+    GRDX_SMART_CONTRACT_ADDRESS       : 'terra12f3f5fzfzxckc0qlv3rmwwkjfhzevpwmx77345n0zuu2678vxf0sm6vvcw',
+    //TERRASWAP_GRDX_TO_LUNC_ADDRESS    : 'terra12f3f5fzfzxckc0qlv3rmwwkjfhzevpwmx77345n0zuu2678vxf0sm6vvcw',
+    LENNY_SMART_CONTRACT_ADDRESS      : 'terra1gcr97yaq923qaxa3gzn70kpx29c28m2c3prxn66vev3segea7y4qps5vj4',
+    //TERRAPORT_SWAP_ADDRESS            : 'terra1vrqd7fkchyc7wjumn8fxly88z7kath4djjls3yc5th5g76f3543salu48s',
+    CREMAT_SMART_CONTRACT_ADDRESS     : 'terra1zkhwtm4a559emekwj7z4vklzqupgjyad8ncpwvav38y5ef6g5tjse7ceus',
+    CANDY_SMART_CONTRACT_ADDRESS      : 'terra1nuwdr5zaul2gnq88xapq8ythmaw4092kt8lxsl6jd36h47u8vpcqnrmdcm',
+    ELON_SMART_CONTRACT_ADDRESS       : 'terra13d6xlk4d6cfa6c5c7n2ffua5d5fk5ggfq8vsxr34xnxr07nmke0qajzu8y',
+    RAKOFF_SMART_CONTRACT_ADDRESS     : 'terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2'
+} as const;
+
+export const COIN_ALIASES: any = {
+    [NON_ULUNA_COINS.BASE_SMART_CONTRACT_ADDRESS]   : 'BASE',
+    [NON_ULUNA_COINS.CANDY_SMART_CONTRACT_ADDRESS]  : 'LNC',
+    [NON_ULUNA_COINS.CREMAT_SMART_CONTRACT_ADDRESS] : 'CREMAT',
+    [NON_ULUNA_COINS.ELON_SMART_CONTRACT_ADDRESS]   : 'ELON',
+    [NON_ULUNA_COINS.LENNY_SMART_CONTRACT_ADDRESS]  : 'Lenny',
+    [NON_ULUNA_COINS.RAKOFF_SMART_CONTRACT_ADDRESS] : 'Rakoff',
+    [NON_ULUNA_COINS.TERRASWAP_GRDX_TO_LUNC_ADDRESS]: 'GRDX'
+}
 
 //Coin constants:
 export const COIN_CODES: any = {

@@ -4,6 +4,9 @@ import { Wallet } from '../../interfaces/wallet';
 import { CommonModule } from '@angular/common';
 import { WalletService } from '../../services/wallet.service';
 import { NewWalletComponent } from '../new-wallet/new-wallet.component';
+import { BalancesService } from '../../services/balances.service';
+import { WalletCoin } from '../../interfaces/walletcoin';
+
 @Component({
   selector: 'app-wallet-list',
   standalone: true,
@@ -18,22 +21,48 @@ export class WalletListComponent {
   
   walletList: Wallet[]
 
-  filteredWalletList: Wallet[] = [];
+  //allCoins: any = []
+  allCoins = new Map<String, WalletCoin>()
+  //filteredWalletList: Wallet[] = [];
 
-  filterResults(text: string) {
-    if (!text) {
-      this.filteredWalletList = this.walletList;
-      return;
-    }
-    this.filteredWalletList = this.walletList.filter((walletItem) =>
-      walletItem?.name.toLowerCase().includes(text.toLowerCase()),
-    );
+  // filterResults(text: string) {
+  //   if (!text) {
+  //     this.filteredWalletList = this.walletList;
+  //     return;
+  //   }
+  //   this.filteredWalletList = this.walletList.filter((walletItem) =>
+  //     walletItem?.name.toLowerCase().includes(text.toLowerCase()),
+  //   );
+  // }
+
+  private async getList(){
+    
+    
+    //console.log (this.walletList)
+
+    //for (var i = 0; i < this.walletList.length; i++){
+      var i = 8
+      console.log ('getting wallet balance for', this.walletList[i].name, '(', this.walletList[i].address, ')')
+      var balances:BalancesService = await this.walletService.getBalances(this.walletList[i].address)
+    
+      balances.balances.forEach((coin) =>{        
+        this.allCoins.set(coin.name, coin)
+      })
+
+
   }
 
-  constructor() {
-    this.walletList = this.walletService.getAllWallets();
 
-    this.filteredWalletList = this.walletList;
+  constructor() {
+
+    // Get all the wallets in our localStorage object
+    this.walletList = this.walletService.getAllWallets()
+
+    // Get the balance for each wallet
+    this.getList()
+    
+    console.log (this.allCoins)
+    console.log ('wallet list stuff finished!')
   }
   
 }

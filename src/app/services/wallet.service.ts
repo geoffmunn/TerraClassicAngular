@@ -3,10 +3,10 @@ import { Wallet } from '../interfaces/wallet';
 import { LocalstorageService } from './localstorage.service';
 import CryptoJS from 'crypto-js';
 import { LCDClient, Coin, Coins, MnemonicKey } from '@geoffmunn/feather.js';
-import { Pagination } from '@geoffmunn/feather.js/dist/client/lcd/APIRequester';
+import { Pagination, PaginationOptions } from '@geoffmunn/feather.js/dist/client/lcd/APIRequester';
 import { WalletCoin } from '../interfaces/walletcoin';
 import { RequestService } from './request.service';
-import { CHAIN_DATA, COIN_CODES, FULL_COIN_LOOKUP } from '../constants'
+import { CHAIN_DATA, COIN_CODES, FULL_COIN_LOOKUP, NON_ULUNA_COINS, COIN_ALIASES } from '../constants'
 import { BalancesService } from './balances.service';
 import { HttpClient } from '@angular/common/http';
 
@@ -44,7 +44,6 @@ export class WalletService {
       address = '';
     }
 
-    //console.log ('returning:', address)
     return address
   }
 
@@ -68,7 +67,15 @@ export class WalletService {
     }
 
     // We will use the uri as the key, just to make sure there are no collisions
+    //erc20Tokens[key as keyof typeof erc20Tokens]
+    // const test = (key: string) => {
+    //   console.log(erc20Tokens[key as keyof IERC20Tokens]);
+    // };
+    
+    // test('dai');
+    
     var value: string = ibc_address.slice(4);
+    //var chain_name: string = CHAIN_DATA['uluna' as keyof COIN_CODES]['cosmos_name']
     var chain_name: string = CHAIN_DATA[COIN_CODES.ULUNA]['cosmos_name']
     var uri: string        = 'https://rest.cosmos.directory/' + chain_name + '/ibc/apps/transfer/v1/denom_traces/' + value
 
@@ -123,6 +130,20 @@ export class WalletService {
     return true;
   }
 
+  private formatAmount(amount: number, denom: string): number{
+
+    var result: number = 0
+    const default_precision: number = 6
+
+    if (denom in CHAIN_DATA){
+      result = Number((amount / (CHAIN_DATA[denom]['precision'] ** 10)).toFixed(6))
+    } else {
+      result = Number((amount / (default_precision ** 10)).toFixed(6))
+    }
+
+    return result
+  }
+
   /**
    * Get all the wallets in the local storage object
    * If none exist, return an empty array
@@ -144,9 +165,77 @@ export class WalletService {
     return wallets;
   }
 
+  async testx(address: string){
+    let non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery('terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2', {'balance':{'address':address}})  
+
+    console.log ('non uluna balance: ', non_uluna_balance)
+    await non_uluna_balance.then((name) => {
+      var coin: WalletCoin = {
+        amount: 123456,
+        name: 'rakoff',
+        readable: 'RAKOFF'
+      }
+
+      this.balances.balances.set('rakoff', coin)
+    })
+  }
+  
+  async testtest(address: string) {
+    // Object.entries(NON_ULUNA_COINS).forEach(([key, value], index) => {
+    //   // Cast the value to a string
+    //   let val:string = String(value)
+    //   //console.log(key, value, index);
+    //   const non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery(val, {'balance':{'address':address}})  
+
+    //   non_uluna_balance.then(async (name) => { 
+
+    //     var item: any = name
+    //     let formatted_amount = this.formatAmount(Number(item.balance), COIN_ALIASES[val])
+
+    //     console.log ('discovered:', COIN_ALIASES[val], formatted_amount)
+    //     var coin: WalletCoin = {
+    //       amount: formatted_amount,
+    //       name: val,
+    //       readable: COIN_ALIASES[val]
+    //     }
+
+    //     this.balances.balances.set(val, coin)
+
+    //   });
+
+    //   //const balance:Promise<[Coins, Pagination]> = this.terra.bank.balance(address);
+
+    //   //await balance.then(async (name) => { 
+
+      
+    // });
+
+    //Object.entries(NON_ULUNA_COINS).forEach(async ([key, value], index) => {
+    //Object.entries(NON_ULUNA_COINS).forEach(async ([key, value], index) => {
+      //await this.testx(address)
+    let non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery('terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2', {'balance':{'address':address}})  
+
+    non_uluna_balance.then(async(item) => { 
+      console.log (item)
+      var coin: WalletCoin = {
+        amount: 123456,
+        name: 'rakoff',
+        readable: 'RAKOFF'
+      }
+
+      this.balances.balances.set('rakoff', coin)
+    })
+    //});
+    
+    //console.log ('test:', non_uluna_balance)
+    return this.balances
+  }
+
   async getBalances(address: string): Promise<BalancesService> {
+  //getBalances(address: string): BalancesService {
 
     // LCD understand automatically the chain to query using the bech32 prefix of the address
+    //const pagOpt:PaginationOptions = Pagination(limit=50, count_total=True)
     const balance:Promise<[Coins, Pagination]> = this.terra.bank.balance(address);
 
     await balance.then(async (name) => { 
@@ -160,20 +249,124 @@ export class WalletService {
         })
 
         let key = Object.keys(COIN_CODES).find(key => COIN_CODES[key] === denom_result);
-        console.log ('readable denom:', denom_result, key)
+        let formatted_amount = this.formatAmount(Number(coin_list[i].amount), denom_result)
+
+        //if (formatted_amount != 0){
         if (key !== undefined){
           var coin: WalletCoin = {
-            amount: Number(coin_list[i].amount),
+            amount: formatted_amount,
             name: denom_result,
-            readable: FULL_COIN_LOOKUP[key!]
+            readable: FULL_COIN_LOOKUP[key]
           }
 
           this.balances.balances.set(denom_result, coin)
         }
+        //}  
       }
     })
 
-    console.log ('balances: ', this.balances)
+
+    //this.testtest(address)
+    var keys = Object.keys(NON_ULUNA_COINS)
+    console.log ('keys:', keys)
+    //Object.entries(NON_ULUNA_COINS).forEach(async ([key, value], index) => {
+    for (var i = 0; i < keys.length; i++){
+      console.log ('hi')
+      console.log ('key address:', NON_ULUNA_COINS[keys[i]])
+      console.log ('coin alias:', COIN_ALIASES[NON_ULUNA_COINS[keys[i]]])
+      var non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery(NON_ULUNA_COINS[keys[i]], {'balance':{'address':address}})  
+
+      console.log ('non uluna balance: ', non_uluna_balance)
+      await non_uluna_balance.then((name) => {
+        var coin: WalletCoin = {
+          amount: 123456,
+          name: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]],
+          readable: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]]
+        }
+
+        this.balances.balances.set(COIN_ALIASES[NON_ULUNA_COINS[keys[i]]], coin)
+      })
+
+      // var non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery('terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2', {'balance':{'address':address}})  
+
+      // console.log ('non uluna balance: ', non_uluna_balance)
+      // await non_uluna_balance.then((name) => {
+      //   var coin: WalletCoin = {
+      //     amount: 123456,
+      //     name: 'rakoff',
+      //     readable: 'RAKOFF'
+      //   }
+
+      //   this.balances.balances.set('rakoff', coin)
+      // })
+
+      // var non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery('terra13d6xlk4d6cfa6c5c7n2ffua5d5fk5ggfq8vsxr34xnxr07nmke0qajzu8y', {'balance':{'address':address}})  
+
+      // console.log ('non uluna balance: ', non_uluna_balance)
+      // await non_uluna_balance.then((name) => {
+      //   var coin: WalletCoin = {
+      //     amount: 123456,
+      //     name: 'elon',
+      //     readable: 'ELON'
+      //   }
+
+      //   this.balances.balances.set('elon', coin)
+      // })
+    }
+      //this.testx(address)
+    //});
+
+
+    // non_uluna_balance.then((item) => { 
+    //   console.log (item)
+    //   var coin: WalletCoin = {
+    //     amount: 123456,
+    //     name: 'rakoff',
+    //     readable: 'RAKOFF'
+    //   }
+
+    //   this.balances.balances.set('rakoff', coin)
+    // })
+
+
+    // Now get the non-uluna coins:
+    //console.log ('coin aliases:', COIN_ALIASES)
+    // Object.entries(NON_ULUNA_COINS).forEach(([key, value], index) => {
+    //   // Cast the value to a string
+    //   let val:string = String(value)
+    //   //console.log(key, value, index);
+    //   const non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery(val, {'balance':{'address':address}})  
+
+    //   non_uluna_balance.then(async (name) => { 
+
+    //     var item: any = name
+    //     let formatted_amount = this.formatAmount(Number(item.balance), COIN_ALIASES[val])
+
+    //     //console.log ('discovered:', COIN_ALIASES[val], formatted_amount)
+    //     var coin: WalletCoin = {
+    //       amount: formatted_amount,
+    //       name: val,
+    //       readable: COIN_ALIASES[val]
+    //     }
+
+    //     this.balances.balances.set(val, coin)
+
+    //   });
+
+    //   //const balance:Promise<[Coins, Pagination]> = this.terra.bank.balance(address);
+
+    //   //await balance.then(async (name) => { 
+
+    // });
+    
+
+    // NON_ULUNA_COINS.forEach(function(item:string){
+    //   console.log('non uluna item:', item)
+    // })
+    //var coin_balance = this.terra.wasm.contractQuery(coin_address, {'balance':{'address':self.address}})  
+
+
+    console.log ('balances at end: ', this.balances)
     return this.balances
   }
 
@@ -224,8 +417,6 @@ export class WalletService {
   }
 
   constructor(private http: HttpClient) {
-
-    //return Object.keys(object).find(key => object[key] === value);
 
     var config = {
       'columbus-5': {
