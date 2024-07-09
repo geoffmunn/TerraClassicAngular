@@ -45,40 +45,26 @@ export class WalletListComponent {
 
   private async getWallets(){
     
-    //console.log (this.walletList)
-
     // Get the raw balances for each wallet and attach it to the object
     for (var i = 0; i < this.walletList.length; i++){
-      //var i = 8
-      console.log ('getting wallet balance for', this.walletList[i].name, '(', this.walletList[i].address, ')')
       var balances:BalancesService = await this.walletService.getBalances(this.walletList[i].address)
 
       balances.balances.forEach((item:WalletCoin) => {
         this.allCoins2[item.name] = item
+        //this.allCoins[item.name] = item
       })
 
       this.walletBalances2[this.walletList[i].name] = _.cloneDeep(balances.balances)
-      //this.walletBalances2[this.walletList[i].name] = new BalancesService() 
+      //this.walletBalances[this.walletList[i].name] = _.cloneDeep(balances.balances)
     }
 
-    console.log('so far:', this.walletBalances2)
-
-    //Now update the allCoins list with a unified set:
-    // for (var key in this.walletBalances){
-    //   this.walletBalances[key].forEach((item:WalletCoin) => {
-    //     this.allCoins[item.name] = item.readable
-    //   })
-    // }
-      
     // Go through each wallet and add any missing coins from the allCoins list
     for (var key in this.walletBalances2){
-      //console.log ('balances for', key)
+    //for (var key in this.walletBalances){
       for (var key2 in this.allCoins2){
-        //console.log (this.allCoins2[key2])
-
+      //for (var key2 in this.allCoins){
         if (!this.walletBalances2[key].has(key2)){
-          //console.log (key, 'is missing', key2)
-
+        //if (!this.walletBalances[key].has(key2)){
           var coin: WalletCoin = {
             amount: 0,
             name: key2,
@@ -86,14 +72,11 @@ export class WalletListComponent {
           }
 
           this.walletBalances2[key].set(key2, coin)
+          //this.walletBalances[key].set(key2, coin)
         }
       }
-      //console.log(this.walletBalances[key])
     }
-    console.log ('wallet balances:', this.walletBalances2)
-
-
-    console.log ('All done!')
+    
     this.allCoins = this.allCoins2
     this.walletBalances = this.walletBalances2
   }
