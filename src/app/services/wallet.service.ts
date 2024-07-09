@@ -165,72 +165,6 @@ export class WalletService {
     return wallets;
   }
 
-  async testx(address: string){
-    let non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery('terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2', {'balance':{'address':address}})  
-
-    console.log ('non uluna balance: ', non_uluna_balance)
-    await non_uluna_balance.then((name) => {
-      var coin: WalletCoin = {
-        amount: 123456,
-        name: 'rakoff',
-        readable: 'RAKOFF'
-      }
-
-      this.balances.balances.set('rakoff', coin)
-    })
-  }
-  
-  async testtest(address: string) {
-    // Object.entries(NON_ULUNA_COINS).forEach(([key, value], index) => {
-    //   // Cast the value to a string
-    //   let val:string = String(value)
-    //   //console.log(key, value, index);
-    //   const non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery(val, {'balance':{'address':address}})  
-
-    //   non_uluna_balance.then(async (name) => { 
-
-    //     var item: any = name
-    //     let formatted_amount = this.formatAmount(Number(item.balance), COIN_ALIASES[val])
-
-    //     console.log ('discovered:', COIN_ALIASES[val], formatted_amount)
-    //     var coin: WalletCoin = {
-    //       amount: formatted_amount,
-    //       name: val,
-    //       readable: COIN_ALIASES[val]
-    //     }
-
-    //     this.balances.balances.set(val, coin)
-
-    //   });
-
-    //   //const balance:Promise<[Coins, Pagination]> = this.terra.bank.balance(address);
-
-    //   //await balance.then(async (name) => { 
-
-      
-    // });
-
-    //Object.entries(NON_ULUNA_COINS).forEach(async ([key, value], index) => {
-    //Object.entries(NON_ULUNA_COINS).forEach(async ([key, value], index) => {
-      //await this.testx(address)
-    let non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery('terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2', {'balance':{'address':address}})  
-
-    non_uluna_balance.then(async(item) => { 
-      console.log (item)
-      var coin: WalletCoin = {
-        amount: 123456,
-        name: 'rakoff',
-        readable: 'RAKOFF'
-      }
-
-      this.balances.balances.set('rakoff', coin)
-    })
-    //});
-    
-    //console.log ('test:', non_uluna_balance)
-    return this.balances
-  }
-
   async getBalances(address: string): Promise<BalancesService> {
   //getBalances(address: string): BalancesService {
 
@@ -248,125 +182,49 @@ export class WalletService {
           return name
         })
 
-        let key = Object.keys(COIN_CODES).find(key => COIN_CODES[key] === denom_result);
-        let formatted_amount = this.formatAmount(Number(coin_list[i].amount), denom_result)
+        if (denom_result != undefined){
+          let key = Object.keys(COIN_CODES).find(key => COIN_CODES[key] === denom_result);
+          let formatted_amount = this.formatAmount(Number(coin_list[i].amount), denom_result)
 
-        //if (formatted_amount != 0){
-        if (key !== undefined){
-          var coin: WalletCoin = {
-            amount: formatted_amount,
-            name: denom_result,
-            readable: FULL_COIN_LOOKUP[key]
+          //if (formatted_amount != 0){
+          if (key !== undefined){
+            var coin: WalletCoin = {
+              amount: formatted_amount,
+              name: denom_result,
+              readable: FULL_COIN_LOOKUP[key]
+            }
+
+            this.balances.balances.set(denom_result, coin)
+            //this.balances.balances[denom_result] = coin
           }
-
-          this.balances.balances.set(denom_result, coin)
+          //}  
         }
-        //}  
       }
     })
 
-
-    //this.testtest(address)
     var keys = Object.keys(NON_ULUNA_COINS)
-    console.log ('keys:', keys)
-    //Object.entries(NON_ULUNA_COINS).forEach(async ([key, value], index) => {
     for (var i = 0; i < keys.length; i++){
-      console.log ('hi')
-      console.log ('key address:', NON_ULUNA_COINS[keys[i]])
-      console.log ('coin alias:', COIN_ALIASES[NON_ULUNA_COINS[keys[i]]])
-      var non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery(NON_ULUNA_COINS[keys[i]], {'balance':{'address':address}})  
+      if (COIN_ALIASES[NON_ULUNA_COINS[keys[i]]] !== undefined){
+        var non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery(NON_ULUNA_COINS[keys[i]], {'balance':{'address':address}})  
 
-      console.log ('non uluna balance: ', non_uluna_balance)
-      await non_uluna_balance.then((name) => {
-        var coin: WalletCoin = {
-          amount: 123456,
-          name: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]],
-          readable: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]]
-        }
+        await non_uluna_balance.then((name: any) => {
+          console.log ('new coin:', name)
+          var x:any = name
+          let formatted_amount = this.formatAmount(Number(x.balance), COIN_ALIASES[NON_ULUNA_COINS[keys[i]]])
+          
+          var coin: WalletCoin = {
+            amount: formatted_amount,
+            name: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]],
+            readable: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]]
+          }
 
-        this.balances.balances.set(COIN_ALIASES[NON_ULUNA_COINS[keys[i]]], coin)
-      })
-
-      // var non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery('terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2', {'balance':{'address':address}})  
-
-      // console.log ('non uluna balance: ', non_uluna_balance)
-      // await non_uluna_balance.then((name) => {
-      //   var coin: WalletCoin = {
-      //     amount: 123456,
-      //     name: 'rakoff',
-      //     readable: 'RAKOFF'
-      //   }
-
-      //   this.balances.balances.set('rakoff', coin)
-      // })
-
-      // var non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery('terra13d6xlk4d6cfa6c5c7n2ffua5d5fk5ggfq8vsxr34xnxr07nmke0qajzu8y', {'balance':{'address':address}})  
-
-      // console.log ('non uluna balance: ', non_uluna_balance)
-      // await non_uluna_balance.then((name) => {
-      //   var coin: WalletCoin = {
-      //     amount: 123456,
-      //     name: 'elon',
-      //     readable: 'ELON'
-      //   }
-
-      //   this.balances.balances.set('elon', coin)
-      // })
+          console.log ('adding', coin, 'to', COIN_ALIASES[NON_ULUNA_COINS[keys[i]]])
+          this.balances.balances.set(COIN_ALIASES[NON_ULUNA_COINS[keys[i]]], coin)
+        })
+      }
     }
-      //this.testx(address)
-    //});
 
-
-    // non_uluna_balance.then((item) => { 
-    //   console.log (item)
-    //   var coin: WalletCoin = {
-    //     amount: 123456,
-    //     name: 'rakoff',
-    //     readable: 'RAKOFF'
-    //   }
-
-    //   this.balances.balances.set('rakoff', coin)
-    // })
-
-
-    // Now get the non-uluna coins:
-    //console.log ('coin aliases:', COIN_ALIASES)
-    // Object.entries(NON_ULUNA_COINS).forEach(([key, value], index) => {
-    //   // Cast the value to a string
-    //   let val:string = String(value)
-    //   //console.log(key, value, index);
-    //   const non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery(val, {'balance':{'address':address}})  
-
-    //   non_uluna_balance.then(async (name) => { 
-
-    //     var item: any = name
-    //     let formatted_amount = this.formatAmount(Number(item.balance), COIN_ALIASES[val])
-
-    //     //console.log ('discovered:', COIN_ALIASES[val], formatted_amount)
-    //     var coin: WalletCoin = {
-    //       amount: formatted_amount,
-    //       name: val,
-    //       readable: COIN_ALIASES[val]
-    //     }
-
-    //     this.balances.balances.set(val, coin)
-
-    //   });
-
-    //   //const balance:Promise<[Coins, Pagination]> = this.terra.bank.balance(address);
-
-    //   //await balance.then(async (name) => { 
-
-    // });
-    
-
-    // NON_ULUNA_COINS.forEach(function(item:string){
-    //   console.log('non uluna item:', item)
-    // })
-    //var coin_balance = this.terra.wasm.contractQuery(coin_address, {'balance':{'address':self.address}})  
-
-
-    console.log ('balances at end: ', this.balances)
+    //console.log ('balances at end: ', this.balances)
     return this.balances
   }
 

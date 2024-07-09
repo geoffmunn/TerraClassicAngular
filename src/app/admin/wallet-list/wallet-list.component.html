@@ -19,19 +19,18 @@
         </thead>
         <tbody>
 
-            <!-- <tr *ngFor="let coin of allCoins">
-                <td>{{ coin }}</td>
-            </tr> -->
+            <tr *ngFor="let coin of allCoins | keyvalue">
+                <td>{{ coin.value.readable}}</td>
+                <td *ngFor="let wallet of walletList">{{ walletBalances[wallet.name]?.get(coin.value.name)['amount'] }}</td>
+                <!-- <td *ngFor="let wallet of walletList">{{ walletBalances[wallet.name]?.get(coin.value)['amount'] }}</td> -->
+
+            </tr>
 
         </tbody>
     </table>
 </div>
 
-<!-- @for (c of allCoins; track c.readable) {
-    <p>{{c.readable}}</p>
-  } -->
-
-<li *ngFor="let coin of allCoins | keyvalue">{{coin.value.readable}}</li>
+<!-- <li *ngFor="let coin of allCoins | keyvalue">{{coin.value.readable}}</li> -->
 
 <!-- <section class="results">
     <app-wallet-item *ngFor="let wallet of walletList" [wallet]="wallet"></app-wallet-item>

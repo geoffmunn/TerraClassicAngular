@@ -1,12 +1,11 @@
 import { Component, inject } from '@angular/core';
-import { BalancesComponent } from '../balances/balances.component';
 import { WalletService } from '../services/wallet.service';
 import { WalletListComponent } from '../admin/wallet-list/wallet-list.component';
 import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [BalancesComponent, WalletListComponent],
+  imports: [WalletListComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
