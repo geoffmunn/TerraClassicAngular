@@ -230,53 +230,6 @@ export const FULL_COIN_LOOKUP: any = {
     WMATIC:    'wMATIC'
 } as const;
 
-// var test = {
-//     [COIN_CODES.ULUNA]: {
-//         'chain_id': 'columbus-5',
-//         'coingecko_id':  'terra-luna',
-//         'cosmos_name':   'terra',
-//         'ibc_channels':  {
-//             'uosmo': 'channel-1',
-//         },
-//         'lcd_urls':      ['https://terra-classic-fcd.publicnode.com', 'https://rest.cosmos.directory/terra', 'https://terra-classic-fcd.publicnode.com'],
-//         'precision':     6,
-//         'bech32_prefix': 'terra'
-//     }
-// }
-
-// console.log ('test:', test)
-// console.log (test[COIN_CODES.ULUNA])
-// console.log (test[COIN_CODES.ULUNA].chain_id)
-
-//type ChainType = Array<{id: string>;
-
-// var chain = {'chain_id': 'columbus-5'}
-// interface COINTYPE {
-//     //[key: string]: string | boolean | number;
-//     [key: string]: {};
-// }
-
-// //interface CHAIN {
-// //    []
-// //}
-
-// var obj: COINTYPE = {
-//     // key1: "apple",
-//     // key2: true,
-//     // key3: 123
-//     {{ULUNA}}: {
-//         'chain_id': 'columbus-5'
-//     }
-// };
-
-// console.log (obj)
-
-
-//let colors: string[] = ["red", "green", "blue"];
-//console.log(colors);
-
-//export const CHAIN_DATA:Array<string> = new Array()
-
 export const CHAIN_DATA: any = {
     [COIN_CODES.ULUNA]: {
         'chain_id':      'columbus-5',
@@ -772,4 +725,29 @@ export const CHAIN_DATA: any = {
     }
 } as const;
 
-//console.log ('xxx:', CHAIN_DATA[COIN_CODES.ULUNA].cosmos_name)
+export const DISABLED_COIN_CODES: any = {
+    UAUD      : 'uaud',
+    UCAD      : 'ucad',
+    UCHF      : 'uchf',
+    UCNY      : 'ucny',
+    UDKK      : 'udkk',
+    UEUR      : 'ueur',
+    UGBP      : 'ugbp',
+    UHKD      : 'uhkd',
+    UIDR      : 'uidr',
+    UINR      : 'uinr',
+    UJPY      : 'ujpy',
+    UMNT      : 'umnt',
+    UMYR      : 'umyr',
+    UNOK      : 'unok',
+    UPHP      : 'uphp',
+    USDR      : 'usdr',
+    USEK      : 'usek',
+    USGD      : 'usgd',
+    UTHB      : 'uthb',
+    UTWT      : 'utwd',    
+} as const;
+
+for (var key in DISABLED_COIN_CODES){
+    delete COIN_CODES[key]
+}
