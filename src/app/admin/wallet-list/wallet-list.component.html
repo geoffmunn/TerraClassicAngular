@@ -1,10 +1,3 @@
-<!-- <section>
-    <form>
-        <input type="text" placeholder="Filter by city" #filter>
-        <button class="primary" type="button" (click)="filterResults(filter.value)">Search</button>
-    </form>
-</section> -->
-
 <app-new-wallet></app-new-wallet>
 
 <div>
@@ -13,26 +6,17 @@
         <thead>
             <tr>
                 <th>Coin</th>
-                <th *ngFor="let wallet of walletList">{{ wallet.name }}</th>
+                <th *ngFor="let wallet of wallet_service.wallet_list"><a [routerLink]="['/details', wallet.id]">{{ wallet.name }}</a></th>
 
             </tr>
         </thead>
         <tbody>
 
-            <tr *ngFor="let coin of allCoins | keyvalue">
+            <tr *ngFor="let coin of all_coins | keyvalue">
                 <td>{{ coin.value.readable}}</td>
-                <td *ngFor="let wallet of walletList">{{ walletBalances[wallet.name]?.get(coin.value.name)['amount'] }}</td>
-                <!-- <td *ngFor="let wallet of walletList">{{ walletBalances[wallet.name]?.get(coin.value)['amount'] }}</td> -->
-
+                <td *ngFor="let wallet of wallet_service.wallet_list">{{ wallet_balances[wallet.name]?.get(coin.value.name)['amount'] }}</td>
             </tr>
 
         </tbody>
     </table>
 </div>
-
-<!-- <li *ngFor="let coin of allCoins | keyvalue">{{coin.value.readable}}</li> -->
-
-<!-- <section class="results">
-    <app-wallet-item *ngFor="let wallet of walletList" [wallet]="wallet"></app-wallet-item>
-</section> -->
-

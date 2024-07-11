@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { Wallet } from '../interfaces/wallet';
 import { LocalstorageService } from './localstorage.service';
 import CryptoJS from 'crypto-js';
@@ -132,13 +132,13 @@ export class WalletService {
 
   private formatAmount(amount: number, denom: string): number{
 
-    var result: number = 0
+    let result: number = 0
     const default_precision: number = 6
 
     if (denom in CHAIN_DATA){
-      result = Number((amount / (CHAIN_DATA[denom]['precision'] ** 10)).toFixed(6))
+      result = Number((amount / (10 ** CHAIN_DATA[denom]['precision'])).toFixed(6))
     } else {
-      result = Number((amount / (default_precision ** 10)).toFixed(6))
+      result = Number((amount / (10 ** default_precision)).toFixed(6))
     }
 
     return result
@@ -185,7 +185,8 @@ export class WalletService {
         if (denom_result != undefined){
           let key = Object.keys(COIN_CODES).find(key => COIN_CODES[key] === denom_result);
           let formatted_amount = this.formatAmount(Number(coin_list[i].amount), denom_result)
-
+          console.log (denom_result, coin_list[i].amount)
+          console.log (denom_result, ':', formatted_amount)
           //if (formatted_amount != 0){
           if (key !== undefined){
             var coin: WalletCoin = {
@@ -208,7 +209,6 @@ export class WalletService {
         var non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery(NON_ULUNA_COINS[keys[i]], {'balance':{'address':address}})  
 
         await non_uluna_balance.then((name: any) => {
-          console.log ('new coin:', name)
           var x:any = name
           let formatted_amount = this.formatAmount(Number(x.balance), COIN_ALIASES[NON_ULUNA_COINS[keys[i]]])
           
@@ -218,13 +218,12 @@ export class WalletService {
             readable: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]]
           }
 
-          console.log ('adding', coin, 'to', COIN_ALIASES[NON_ULUNA_COINS[keys[i]]])
           this.balances.balances.set(COIN_ALIASES[NON_ULUNA_COINS[keys[i]]], coin)
         })
       }
     }
 
-    //console.log ('balances at end: ', this.balances)
+    console.log ('balances: ', this.balances)
     return this.balances
   }
 
@@ -265,7 +264,7 @@ export class WalletService {
    * 
    * @return true
    */
-  public newWallet(wallet_name: string, wallet_address: string, wallet_seed: string): boolean{
+  public newWallet(wallet_name: string, wallet_address: string, wallet_seed: string): boolean {
     
     const wallet_id: number = this.getNextWalletID();
     this.wallet_list.push({'id': wallet_id, 'name': wallet_name, 'address': wallet_address, 'seed': wallet_seed})    
@@ -288,10 +287,11 @@ export class WalletService {
     
     this.terra = new LCDClient(config)
 
-    this.key = 'wallet123'
+    //this.key = 'wallet123'
+    //this.key
 
     // Get the current wallets:
-    this.wallet_list = this.getAllWallets()
+    //this.wallet_list = this.getAllWallets()
   }
 
 }

@@ -13,21 +13,23 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class HomeComponent {
 
   private route: ActivatedRoute = inject(ActivatedRoute);
-  private walletService = inject(WalletService);
+  
+  public decryption_password = 'wallet123'
 
   constructor(private router: Router,){
     if(this.route.snapshot.url.length > 0){
       const action: string = this.route.snapshot.url[0].path.toLowerCase();
       const wallet_id: number = Number(this.route.snapshot.params['id']);
 
-      console.log ('action:', action)
-      console.log ('wallet id:', wallet_id)
+      //console.log ('action:', action)
+      //console.log ('wallet id:', wallet_id)
 
-      this.walletService.deleteWalletByID(wallet_id)
+      var walletService = inject(WalletService);
+
+      walletService.deleteWalletByID(wallet_id)
 
       this.router.navigate([''])
 
     }
-    
   }
 }

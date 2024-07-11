@@ -1,6 +1,5 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { WalletItemComponent } from '../../wallet-item/wallet-item.component';
-import { Wallet } from '../../interfaces/wallet';
 import { CommonModule } from '@angular/common';
 import { WalletService } from '../../services/wallet.service';
 import { NewWalletComponent } from '../new-wallet/new-wallet.component';
@@ -8,29 +7,34 @@ import { BalancesService } from '../../services/balances.service';
 import { WalletCoin } from '../../interfaces/walletcoin';
 
 import _ from 'lodash';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-wallet-list',
   standalone: true,
-  imports: [CommonModule, WalletItemComponent, NewWalletComponent],
+  imports: [CommonModule, WalletItemComponent, NewWalletComponent, RouterModule],
   templateUrl: './wallet-list.component.html',
   styleUrl: './wallet-list.component.css'
 })
 
 export class WalletListComponent {
 
-  walletService: WalletService = inject(WalletService);
+  public wallet_service: WalletService = inject(WalletService);
   
-  walletList: Wallet[]
+  public all_coins: { [key: string]: WalletCoin } = {}
+  private _all_coins: { [key: string]: WalletCoin } = {}
 
-  allCoins: { [key: string]: WalletCoin } = {}
-  allCoins2: { [key: string]: WalletCoin } = {}
-  //allCoins = new Map<String, WalletCoin>()
+  public wallet_balances: { [key: string]: any } = {}
+  private _wallet_balances: { [key: string]: any } = {}
 
-  //walletBalances: string[] = []
-  walletBalances: { [key: string]: any } = {}
-  walletBalances2: { [key: string]: any } = {}
-
+  @Input() 
+    public set password(val: any) {
+      if (val != ''){
+        this.wallet_service.key = val;
+        this.create_list()
+      }
+    }
+    
   //filteredWalletList: Wallet[] = [];
 
   // filterResults(text: string) {
@@ -43,81 +47,64 @@ export class WalletListComponent {
   //   );
   // }
 
-  private async getWallets(){
+  private async get_wallet_balances(){
     
     // Get the raw balances for each wallet and attach it to the object
-    for (var i = 0; i < this.walletList.length; i++){
-      var balances:BalancesService = await this.walletService.getBalances(this.walletList[i].address)
+    for (var i = 0; i < this.wallet_service.wallet_list.length; i++){
+      var balances:BalancesService = await this.wallet_service.getBalances(this.wallet_service.wallet_list[i].address)
 
       balances.balances.forEach((item:WalletCoin) => {
-        this.allCoins2[item.name] = item
-        //this.allCoins[item.name] = item
+        this._all_coins[item.name] = item
       })
 
-      this.walletBalances2[this.walletList[i].name] = _.cloneDeep(balances.balances)
-      //this.walletBalances[this.walletList[i].name] = _.cloneDeep(balances.balances)
+      this._wallet_balances[this.wallet_service.wallet_list[i].name] = _.cloneDeep(balances.balances)
     }
 
     // Go through each wallet and add any missing coins from the allCoins list
-    for (var key in this.walletBalances2){
-    //for (var key in this.walletBalances){
-      for (var key2 in this.allCoins2){
-      //for (var key2 in this.allCoins){
-        if (!this.walletBalances2[key].has(key2)){
-        //if (!this.walletBalances[key].has(key2)){
+    for (var wallet_balance_key in this._wallet_balances){
+      for (var all_coins_key in this._all_coins){
+        if (!this._wallet_balances[wallet_balance_key].has(all_coins_key)){
           var coin: WalletCoin = {
             amount: 0,
-            name: key2,
-            readable: key2
+            name: all_coins_key,
+            readable: all_coins_key
           }
 
-          this.walletBalances2[key].set(key2, coin)
-          //this.walletBalances[key].set(key2, coin)
+          this._wallet_balances[wallet_balance_key].set(all_coins_key, coin)
         }
       }
     }
     
-    this.allCoins = this.allCoins2
-    this.walletBalances = this.walletBalances2
+    this.all_coins = this._all_coins
+    this.wallet_balances = this._wallet_balances
   }
 
-  private async getList(){
-    
-    //console.log (this.walletList)
+  /**
+   * Create the list of wallets and associated balances.
+   * The decryption key must have been set prior to this being called.
+   */
+  public create_list(): boolean {
 
-    for (var i = 0; i < this.walletList.length; i++){
-      //var i = 8
-      console.log ('getting wallet balance for', this.walletList[i].name, '(', this.walletList[i].address, ')')
-      var balances:BalancesService = await this.walletService.getBalances(this.walletList[i].address)
+    if (this.wallet_service.key != '') {
+      try {
+        // Get all the wallets in our localStorage object
+        this.wallet_service.wallet_list = this.wallet_service.getAllWallets()
 
-      //console.log ('balances from wallet service:', balances)
-      //var name: string = String()
-      //this.walletBalances[this.walletList[i].name] = balances.balances
-      var copied = _.cloneDeep(balances.balances)
-      //this.walletBalances[this.walletList[i].name] = _.cloneDeep(balances.balances)
+        //Get the balance for each wallet
+        this.get_wallet_balances()
 
-      //console.log (balances.balances.get('uluna'))
-      copied.forEach((coin) =>{        
+        return true;
 
-        //this.allCoins.set(coin.name, coin)
-        this.allCoins[coin.name] = coin
-      })
+      } catch(e){ 
+        console.log (e)
+        return false
+      }
 
+    } else {
+      return false;
     }
-
-    console.log ('wallet balances:', this.walletBalances)
   }
 
-
-  constructor() {
-
-    // Get all the wallets in our localStorage object
-    this.walletList = this.walletService.getAllWallets()
-
-    // Get the balance for each wallet
-    this.getWallets()
-
-    console.log ('wallet list stuff finished!')
-  }
+  constructor() {}
   
 }
