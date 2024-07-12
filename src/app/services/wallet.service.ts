@@ -287,11 +287,6 @@ export class WalletService {
     
     this.terra = new LCDClient(config)
 
-    //this.key = 'wallet123'
-    //this.key
-
-    // Get the current wallets:
-    //this.wallet_list = this.getAllWallets()
   }
 
 }
