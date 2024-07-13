@@ -14,7 +14,7 @@
 
             <tr *ngFor="let coin of all_coins | keyvalue">
                 <td>{{ coin.value.readable}}</td>
-                <td *ngFor="let wallet of wallet_service.wallet_list">{{ wallet_balances[wallet.name]?.get(coin.value.name)['amount'] }}</td>
+                <td *ngFor="let wallet of wallet_service.wallet_list"><span (click)="updateSendForm(wallet.id, coin.value.denom)">{{ wallet_balances[wallet.name]?.get(coin.value.denom)['formatted'] }}</span></td>
             </tr>
 
         </tbody>

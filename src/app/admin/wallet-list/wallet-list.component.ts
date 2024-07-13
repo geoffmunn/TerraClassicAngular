@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { WalletItemComponent } from '../../wallet-item/wallet-item.component';
 import { CommonModule } from '@angular/common';
 import { WalletService } from '../../services/wallet.service';
@@ -35,6 +35,8 @@ export class WalletListComponent {
       }
     }
     
+  @Output() selectedWalletCoin = new EventEmitter();
+
   //filteredWalletList: Wallet[] = [];
 
   // filterResults(text: string) {
@@ -50,15 +52,16 @@ export class WalletListComponent {
   private async get_wallet_balances(){
     
     // Get the raw balances for each wallet and attach it to the object
-    for (var i = 0; i < this.wallet_service.wallet_list.length; i++){
+    //for (var i = 0; i < this.wallet_service.wallet_list.length; i++){
+      var i = 8;
       var balances:BalancesService = await this.wallet_service.getBalances(this.wallet_service.wallet_list[i].address)
 
       balances.balances.forEach((item:WalletCoin) => {
-        this._all_coins[item.name] = item
+        this._all_coins[item.denom] = item
       })
 
       this._wallet_balances[this.wallet_service.wallet_list[i].name] = _.cloneDeep(balances.balances)
-    }
+    //}
 
     // Go through each wallet and add any missing coins from the allCoins list
     for (var wallet_balance_key in this._wallet_balances){
@@ -66,7 +69,8 @@ export class WalletListComponent {
         if (!this._wallet_balances[wallet_balance_key].has(all_coins_key)){
           var coin: WalletCoin = {
             amount: 0,
-            name: all_coins_key,
+            denom: all_coins_key,
+            formatted: 0,
             readable: all_coins_key
           }
 
@@ -105,6 +109,12 @@ export class WalletListComponent {
     }
   }
 
+  updateSendForm(wallet_id: number, coin_denom: string){
+    console.log (wallet_id, coin_denom)
+    console.log ('sending: ', {'wallet': wallet_id, 'coin_denom': coin_denom})
+
+    this.selectedWalletCoin.emit({'wallet_id': wallet_id, 'coin': this.all_coins[coin_denom]});
+  }
   constructor() {}
   
 }
