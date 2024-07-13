@@ -1,5 +1,6 @@
 export interface WalletCoin {
-    name: string,
-    readable: string,
-    amount: number
+    amount: number,
+    denom: string,
+    formatted: number,
+    readable: string
 }

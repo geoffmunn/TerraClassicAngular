@@ -190,8 +190,9 @@ export class WalletService {
           //if (formatted_amount != 0){
           if (key !== undefined){
             var coin: WalletCoin = {
-              amount: formatted_amount,
-              name: denom_result,
+              amount: Number(coin_list[i].amount),
+              denom: denom_result,
+              formatted: formatted_amount,
               readable: FULL_COIN_LOOKUP[key]
             }
 
@@ -213,8 +214,9 @@ export class WalletService {
           let formatted_amount = this.formatAmount(Number(x.balance), COIN_ALIASES[NON_ULUNA_COINS[keys[i]]])
           
           var coin: WalletCoin = {
-            amount: formatted_amount,
-            name: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]],
+            amount: Number(x.balance),
+            denom: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]],
+            formatted: formatted_amount,
             readable: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]]
           }
 
