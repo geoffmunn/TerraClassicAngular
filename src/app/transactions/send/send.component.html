@@ -1,0 +1,13 @@
+<section class="send-transaction">
+    <h2 class="section-heading">Send transaction</h2>
+    <form [formGroup]="sendTransactionForm" (submit)="sendTransaction()">
+        <label for="wallet-send-name">Wallet Name</label>
+        <input id="wallet-send-name" type="text" formControlName="walletSendName" />
+        <label for="wallet-send-address">Wallet address</label>
+        <input id="wallet-send-address" type="text" formControlName="walletSendAddress" />
+        <label for="send-transaction-amount">Amount</label>
+        <input id="send-transaction-amount" type="text" formControlName="sendTransactionAmount" />
+        
+        <button type="submit" class="primary">Send</button>
+    </form>
+</section>
