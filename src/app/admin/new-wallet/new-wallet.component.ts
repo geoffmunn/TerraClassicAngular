@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './new-wallet.component.html',
   styleUrl: './new-wallet.component.css'
 })
+
 export class NewWalletComponent {
   
   walletService = inject(WalletService);
@@ -32,6 +33,6 @@ export class NewWalletComponent {
   }
 
   generateAddress($event: any){
-    this.walletAddress = this.walletService.createAddressFromSeed($event.target.value)
+    this.newWalletForm.get('walletAddress')?.setValue(this.walletService.createAddressFromSeed($event.target.value))
   }
 }

@@ -6,7 +6,7 @@
         <label for="wallet-seed">Wallet seed</label>
         <input id="wallet-seed" type="text" formControlName="walletSeed" (change)="generateAddress($event)" />
         <label for="wallet-address">Wallet address</label>
-        <input id="wallet-address" type="text" formControlName="walletAddress" [(ngModel)]="walletAddress" />
+        <input id="wallet-address" type="text" formControlName="walletAddress" />
         
         <button type="submit" class="primary">Add wallet</button>
     </form>
