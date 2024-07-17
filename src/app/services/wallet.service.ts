@@ -130,15 +130,45 @@ export class WalletService {
     return true;
   }
 
-  private formatAmount(amount: number, denom: string): number{
+  /**
+   * Based on the denomination, which will indicate the precision, turn this base uluna amount
+   * into the readable number
+   * 
+   * @param base_amount
+   * @param denom 
+   * @returns number
+   */
+  public formatAmountToReadable(base_amount: number, denom: string): number{
 
     let result: number = 0
     const default_precision: number = 6
 
     if (denom in CHAIN_DATA){
-      result = Number((amount / (10 ** CHAIN_DATA[denom]['precision'])).toFixed(6))
+      result = Number((base_amount / (10 ** CHAIN_DATA[denom]['precision'])).toFixed(6))
     } else {
-      result = Number((amount / (10 ** default_precision)).toFixed(6))
+      result = Number((base_amount / (10 ** default_precision)).toFixed(6))
+    }
+
+    return result
+  }
+
+  /**
+   * Based on the denomination, which will indicate the precision, turn this readable amount
+   * into the base number
+   * 
+   * @param readable_amount
+   * @param denom 
+   * @returns number
+   */
+  public formatAmountToBase(readable_amount: number, denom: string): number{
+
+    let result: number = 0
+    const default_precision: number = 6
+
+    if (denom in CHAIN_DATA){
+      result = Number((readable_amount * (10 ** CHAIN_DATA[denom]['precision'])).toFixed(6))
+    } else {
+      result = Number((readable_amount * (10 ** default_precision)).toFixed(6))
     }
 
     return result
@@ -184,7 +214,7 @@ export class WalletService {
 
         if (denom_result != undefined){
           let key = Object.keys(COIN_CODES).find(key => COIN_CODES[key] === denom_result);
-          let formatted_amount = this.formatAmount(Number(coin_list[i].amount), denom_result)
+          let formatted_amount = this.formatAmountToReadable(Number(coin_list[i].amount), denom_result)
           console.log (denom_result, coin_list[i].amount)
           console.log (denom_result, ':', formatted_amount)
           //if (formatted_amount != 0){
@@ -211,7 +241,7 @@ export class WalletService {
 
         await non_uluna_balance.then((name: any) => {
           var x:any = name
-          let formatted_amount = this.formatAmount(Number(x.balance), COIN_ALIASES[NON_ULUNA_COINS[keys[i]]])
+          let formatted_amount = this.formatAmountToReadable(Number(x.balance), COIN_ALIASES[NON_ULUNA_COINS[keys[i]]])
           
           var coin: WalletCoin = {
             amount: Number(x.balance),
