@@ -5,15 +5,15 @@
     <table>
         <thead>
             <tr>
-                <th>Coin</th>
-                <th *ngFor="let wallet of wallet_service.wallet_list"><a [routerLink]="['/details', wallet.id]">{{ wallet.name }}</a></th>
+                <th scope="col">Coin</th>
+                <th score="col" *ngFor="let wallet of wallet_service.wallet_list"><a [routerLink]="['/details', wallet.id]">{{ wallet.name }}</a></th>
 
             </tr>
         </thead>
         <tbody>
 
             <tr *ngFor="let coin of all_coins | keyvalue">
-                <td>{{ coin.value.readable}}</td>
+                <td scope="row">{{ coin.value.readable}}</td>
                 <td *ngFor="let wallet of wallet_service.wallet_list"><span (click)="updateSendForm(wallet.id, coin.value.denom)">{{ wallet_balances[wallet.name]?.get(coin.value.denom)['formatted'] }}</span></td>
             </tr>
 

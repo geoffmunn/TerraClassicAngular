@@ -110,9 +110,6 @@ export class WalletListComponent {
   }
 
   updateSendForm(wallet_id: number, coin_denom: string){
-    console.log (wallet_id, coin_denom)
-    console.log ('sending: ', {'wallet': wallet_id, 'coin_denom': coin_denom})
-
     this.selectedWalletCoin.emit({'wallet_id': wallet_id, 'coin': this.all_coins[coin_denom]});
   }
   constructor() {}
