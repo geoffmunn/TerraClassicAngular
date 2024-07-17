@@ -196,7 +196,6 @@ export class WalletService {
   }
 
   async getBalances(address: string): Promise<BalancesService> {
-  //getBalances(address: string): BalancesService {
 
     // LCD understand automatically the chain to query using the bech32 prefix of the address
     //const pagOpt:PaginationOptions = Pagination(limit=50, count_total=True)
@@ -223,7 +222,8 @@ export class WalletService {
               amount: Number(coin_list[i].amount),
               denom: denom_result,
               formatted: formatted_amount,
-              readable: FULL_COIN_LOOKUP[key]
+              readable: FULL_COIN_LOOKUP[key],
+              wallet_id: 0
             }
 
             this.balances.balances.set(denom_result, coin)
@@ -247,7 +247,8 @@ export class WalletService {
             amount: Number(x.balance),
             denom: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]],
             formatted: formatted_amount,
-            readable: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]]
+            readable: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]],
+            wallet_id: x.id
           }
 
           this.balances.balances.set(COIN_ALIASES[NON_ULUNA_COINS[keys[i]]], coin)
@@ -255,7 +256,6 @@ export class WalletService {
       }
     }
 
-    console.log ('balances: ', this.balances)
     return this.balances
   }
 
