@@ -24,6 +24,9 @@ export class NewWalletComponent {
 
   constructor() {}
 
+  /**
+   * Build the wallet form object
+   */
   newWallet() {
     this.walletService.newWallet(
       this.newWalletForm.value.walletName ?? '',
@@ -32,6 +35,11 @@ export class NewWalletComponent {
     );
   }
 
+  /**
+   * Based on the seed in the form, generate the address and populate the form field with the result
+   * 
+   * @param $event
+   */
   generateAddress($event: any){
     this.newWalletForm.get('walletAddress')?.setValue(this.walletService.createAddressFromSeed($event.target.value))
   }
