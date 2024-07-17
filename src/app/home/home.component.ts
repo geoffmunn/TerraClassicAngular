@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SendComponent } from '../transactions/send/send.component';
 import { WalletCoin } from '../interfaces/walletcoin';
 import { Wallet } from '@geoffmunn/feather.js';
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -18,9 +19,9 @@ export class HomeComponent {
 
   private route: ActivatedRoute = inject(ActivatedRoute);
   
-  public decryption_password         = '';
-  public send_address: string        = '';
-  public selected_wallet_id: number  = 0;
+  public decryption_password              = '';
+  public send_address: string             = '';
+  public selected_wallet_id: number       = 0;
   public selected_wallet_coin: WalletCoin = {} as WalletCoin
 
   /**
@@ -28,32 +29,33 @@ export class HomeComponent {
    * @param $event 
    */
   decryptPassword($event:any){
-    //console.log ('received a new password!')
     this.decryption_password = $event.password
   }
 
-  selectWalletCoin($event:any){
-    console.log ('update the details with this:', $event)
-    this.selected_wallet_id = $event.wallet_id;
-    this.selected_wallet_coin = $event.coin;
-
-    console.log ('selected wallet coin:', this.selected_wallet_coin)
+  /**
+   * This takes the selected coin from the table and passes it to the send component
+   * @param $event 
+   */
+  selectWalletCoin(wallet_coin:WalletCoin){
+    this.selected_wallet_coin = wallet_coin;
+    this.selected_wallet_id = wallet_coin.wallet_id!;
   }
 
   constructor(private router: Router,){
+
+    // Check to see if this is a sub-page
     if(this.route.snapshot.url.length > 0){
       const action: string = this.route.snapshot.url[0].path.toLowerCase();
       const wallet_id: number = Number(this.route.snapshot.params['id']);
 
-      //console.log ('action:', action)
-      //console.log ('wallet id:', wallet_id)
+      // If this is a delete action, then delete the wallet and redirect back to the home page
+      if (action == 'delete'){
+        var walletService = inject(WalletService);
 
-      var walletService = inject(WalletService);
+        walletService.deleteWalletByID(wallet_id);
 
-      walletService.deleteWalletByID(wallet_id)
-
-      this.router.navigate([''])
-
+        this.router.navigate(['']);
+      }
     }
   }
 }
