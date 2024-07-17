@@ -15,17 +15,12 @@ export class WalletPasswordComponent {
 
   walletPassword = new FormGroup({
     walletPassword: new FormControl(''),
-    // savePassword: new FormControl('')
   });
 
   constructor() {}
 
   decryptWallet() {
-
-    console.log(this.walletPassword.value.walletPassword)
-
     this.decryptionPassword.emit({'password': this.walletPassword.value.walletPassword});
-    
   }
 
 }
