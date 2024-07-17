@@ -28,16 +28,12 @@ export class DetailsComponent {
     email: new FormControl(''),
   });
 
+  /**
+   * Based on the ID in the URL, get the wallet that matches it.
+   */
   constructor() {
     const walletID = Number(this.route.snapshot.params['id']);
+
     this.walletItem = this.walletService.getWalletById(walletID);
   }
-
-  // submitApplication() {
-  //   this.walletService.submitApplication(
-  //     this.applyForm.value.firstName ?? '',
-  //     this.applyForm.value.lastName ?? '',
-  //     this.applyForm.value.email ?? '',
-  //   );
-  // }
 }
