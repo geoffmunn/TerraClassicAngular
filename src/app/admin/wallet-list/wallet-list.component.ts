@@ -71,7 +71,8 @@ export class WalletListComponent {
             amount: 0,
             denom: all_coins_key,
             formatted: 0,
-            readable: all_coins_key
+            readable: all_coins_key,
+            wallet_id: 0
           }
 
           this._wallet_balances[wallet_balance_key].set(all_coins_key, coin)
@@ -110,7 +111,12 @@ export class WalletListComponent {
   }
 
   updateSendForm(wallet_id: number, coin_denom: string){
-    this.selectedWalletCoin.emit({'wallet_id': wallet_id, 'coin': this.all_coins[coin_denom]});
+    
+    let result:WalletCoin = {} as WalletCoin
+    result = this.all_coins[coin_denom]
+    result.wallet_id = wallet_id;
+
+    this.selectedWalletCoin.emit(this.all_coins[coin_denom]);
   }
   constructor() {}
   
