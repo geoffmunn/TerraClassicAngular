@@ -7,6 +7,7 @@
         <input id="wallet-send-address" type="text" formControlName="walletSendAddress" />
         <label for="send-transaction-amount">Amount</label>
         <input id="send-transaction-amount" type="text" formControlName="sendTransactionAmount" />
+        <div id="sendValidationError">{{ validation_message }}</div>
         <div id="sendAmountPresets"><ul><li id="sendMax">Max: <span (click)="populateAmount({'percentage': 1})">{{ sendMax }}</span></li><li id="send75">75%: <span (click)="populateAmount({'percentage': 0.75})" >{{ send75 }}</span></li><li id="send50">50%: <span (click)="populateAmount({'percentage': 0.5})">{{ send50 }}</span></li><li id="send25">25%: <span (click)="populateAmount({'percentage': 0.25})">{{ send25 }}</span></li></ul></div>
         <button type="submit" class="primary">Send</button>
     </form>
