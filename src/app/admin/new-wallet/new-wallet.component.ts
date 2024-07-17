@@ -41,6 +41,6 @@ export class NewWalletComponent {
    * @param $event
    */
   generateAddress($event: any){
-    this.newWalletForm.get('walletAddress')?.setValue(this.walletService.createAddressFromSeed($event.target.value))
+    this.newWalletForm.get('walletAddress')?.setValue(this.walletService.createAddressFromSeed($event.target.value));
   }
 }
