@@ -18,29 +18,17 @@ import { PersistablesService } from '../services/persistables.service';
 
 export class HomeComponent {
 
+  private wallet_service: WalletService = inject(WalletService);
   private route: ActivatedRoute = inject(ActivatedRoute);
   private modalService = inject(NgbModal);
-  private persistables = inject(PersistablesService);
+  
+  public persistables = inject(PersistablesService);
 
   public decryption_password              = '';
-  public send_address: string             = '';
+  //public send_address: string             = '';
   public selected_wallet_id: number       = 0;
   public selected_wallet_coin: WalletCoin = {} as WalletCoin
-
-  // /**
-  //  * test
-  //  * @param $event 
-  //  */
-  // decryptionComplete($event: any){
-  //   console.log ('decryption complete!')
-  // }
-  /**
-   * Receive the user password for decrypting the wallet
-   * @param $event 
-   */
-  // decryptPassword($event:any){
-  //   this.decryption_password = $event.password
-  // }
+  //public address_list: string[]           = []
 
   /**
    * This takes the selected coin from the table and passes it to the send component
@@ -49,11 +37,14 @@ export class HomeComponent {
   selectWalletCoin(wallet_coin:WalletCoin){
     this.selected_wallet_coin = wallet_coin;
     this.selected_wallet_id = wallet_coin.wallet_id!;
+
+    // Get the addresses that we can send to:
+    for (var i = 0; i < this.wallet_service.wallet_list.length; i++){
+      this.persistables.address_book.push(this.wallet_service.wallet_list[i].address)
+    }
   }
 
-  constructor(private router: Router,){
-
-    console.log ('persisted password:', this.persistables.decryption_password)
+  constructor(private router: Router){
 
     // Check to see if this is a sub-page
     if(this.route.snapshot.url.length > 0){
@@ -74,7 +65,6 @@ export class HomeComponent {
       const test = this.modalService.open(NgbdModalConfirmAutofocus);
 
       test.result.then(() => {
-        console.log(test.componentInstance.walletPassword.value.walletPassword)
         this.decryption_password = test.componentInstance.walletPassword.value.walletPassword
         this.persistables.decryption_password = this.decryption_password
       }, 
