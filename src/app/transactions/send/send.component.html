@@ -4,7 +4,16 @@
         <label for="wallet-send-name">Wallet Name</label>
         <input id="wallet-send-name" type="text" formControlName="walletSendName" />
         <label for="wallet-send-address">Wallet address</label>
-        <input id="wallet-send-address" type="text" formControlName="walletSendAddress" />
+        <div ngbDropdown class="d-inline-block">
+            <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle formControlName="walletSendAddress">
+                {{ selected_address }}
+            </button>
+            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                @for (address of address_list; track $index){
+                    <button ngbDropdownItem (click)="selectAddress($event)" type="button">{{ address }}</button>
+                }
+            </div>
+        </div>
         <label for="send-transaction-amount">Amount</label>
         <input id="send-transaction-amount" type="text" formControlName="sendTransactionAmount" />
         <div id="sendValidationError">{{ validation_message }}</div>

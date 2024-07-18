@@ -5,12 +5,11 @@ import { WalletService } from '../../services/wallet.service';
 import { Wallet } from '@geoffmunn/feather.js';
 import { WalletCoin } from '../../interfaces/walletcoin';
 import { TransactionItem } from '../../interfaces/transactionItem';
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
+import { NgbActiveModal, NgbModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-send',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgbDropdownModule],
   templateUrl: './send.component.html',
   styleUrl: './send.component.css'
 })
@@ -28,7 +27,11 @@ export class SendComponent {
   public send50: number  = 0;
   public send25: number  = 0;
 
-  public validation_message: string = ''
+  public validation_message: string = '';
+  private default_address_text: string = 'Select an address...';
+  public selected_address: string = this.default_address_text
+
+  //public addresses:string[] = []
 
   @Input() 
     public set selected_wallet_id(val: number) {
@@ -44,8 +47,6 @@ export class SendComponent {
 
   @Input() 
     public set selected_wallet_coin(val: WalletCoin) {
-      console.log ('received wallet coin:', val)
-      console.log (val.denom)
       if ('denom' in val){
           this.coin = val;
 
@@ -55,13 +56,38 @@ export class SendComponent {
           this.send25  = this.coin.formatted * 0.25;
         }
     }
+
+  @Input() address_list:string[] = []
     
   sendTransactionForm = new FormGroup({
     walletSendName: new FormControl(''),
     walletSendAddress: new FormControl(''),
-    sendTransactionAmount: new FormControl('', [Validators.max(100), Validators.min(0)]),
+    sendTransactionAmount: new FormControl(''),
   });
 
+  /**
+   * When someone clicks on a dropdown address, update the button text
+   * 
+   * @param $event
+   */
+  selectAddress($event:MouseEvent){
+    var target:any = $event.target;
+    this.selected_address = target.innerHTML;
+  }
+
+  /**
+   * Using the provided transaction amount, update the form with the percentage amount.
+   * @param percentage
+   */
+  populateAmount(transaction: TransactionItem){
+    const amount:string = String(this.coin.formatted * Number(transaction.percentage));
+
+    this.sendTransactionForm.get('sendTransactionAmount')?.setValue(amount)
+  }
+
+  /**
+   * W
+   */
   sendTransaction(){
     // Validate the amount:
     const user_amount:string = String(this.sendTransactionForm.value.sendTransactionAmount?.trim())
@@ -83,7 +109,10 @@ export class SendComponent {
       send_amount_formatted = Number(user_amount.replaceAll(',', ''))
     }
 
-    if (isNaN(send_amount)){
+    // Start validating the amount and address
+    if (this.selected_address == this.default_address_text){
+      this.validation_message = 'No recipient address was selected!'
+    } else if (isNaN(send_amount)){
       // Display validation error message
       this.validation_message = 'The amount to send is not valid!'
     } else if (send_amount_formatted > this.coin.formatted){ 
@@ -101,9 +130,13 @@ export class SendComponent {
       result.readable  = this.coin.readable
 
       console.log('final result:', result)
-      const test = this.modalService.open(NgbdModalConfirmAutofocus);
+      
+      const confirm_send = this.modalService.open(NgbdModalConfirmAutofocus);
 
-      test.result.then(() => {
+      confirm_send.componentInstance.readable_amount = result.formatted + ' ' + result.readable;
+      confirm_send.componentInstance.recipient_address = this.selected_address;
+
+      confirm_send.result.then(() => {
         console.log('When user closes'); 
       }, 
       () => { 
@@ -113,24 +146,13 @@ export class SendComponent {
 
     }
   }
-
-  /**
-   * Using the provided transaction amount, update the form with the percentage amount.
-   * @param percentage
-   */
-  populateAmount(transaction: TransactionItem){
-    const amount:string = String(this.coin.formatted * Number(transaction.percentage));
-
-    this.sendTransactionForm.get('sendTransactionAmount')?.setValue(amount)
-  }
 }
-
 @Component({
 	selector: 'ngbd-modal-confirm-autofocus',
 	standalone: true,
 	template: `
 		<div class="modal-header">
-			<h4 class="modal-title" id="modal-title">Profile deletion</h4>
+			<h4 class="modal-title" id="modal-title">Send confirmation</h4>
 			<button
 				type="button"
 				class="btn-close"
@@ -141,11 +163,10 @@ export class SendComponent {
 		</div>
 		<div class="modal-body">
 			<p>
-				<strong>Are you sure you want to delete <span class="text-primary">"John Doe"</span> profile?</strong>
+				<strong>Are you sure you want to send <span class="text-primary">{{ readable_amount }}</span> to <span class="send-address">{{ recipient_address }}</span></strong>
 			</p>
 			<p>
-				All information associated to this user profile will be permanently deleted.
-				<span class="text-danger">This operation can not be undone.</span>
+				<span class="text-danger">This transaction can not be undone.</span>
 			</p>
 		</div>
 		<div class="modal-footer">
@@ -157,17 +178,8 @@ export class SendComponent {
 
 export class NgbdModalConfirmAutofocus {
 	modal = inject(NgbActiveModal);
+
+  @Input() readable_amount: string = '';
+  @Input() recipient_address: string = '';
 }
-
-// export class NgbdModalFocus {
-// 	private modalService = inject(NgbModal);
-
-// 	open(name: string) {
-//     console.log('opening!')
-// 		this.modalService.open(NgbdModalConfirmAutofocus);
-// 	}
-
-//   close(test: any){
-//     console.log ('closed!', test)
-//   }
-// }
+export class NgbdDropdownBasic {}
