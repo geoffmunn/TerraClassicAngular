@@ -17,48 +17,41 @@ import { NgbActiveModal, NgbModal, NgbDropdownModule } from '@ng-bootstrap/ng-bo
 export class SendComponent {
 
   private wallet_service: WalletService = inject(WalletService);
-  private modalService = inject(NgbModal);
+  private modalService:NgbModal         = inject(NgbModal);
 
-  private wallet: Wallet   = {} as Wallet;
   private coin: WalletCoin = {} as WalletCoin;
 
+  // The preset percentage options we can send
   public sendMax: number = 0;
   public send75: number  = 0;
   public send50: number  = 0;
   public send25: number  = 0;
 
-  public validation_message: string = '';
   private default_address_text: string = 'Select an address...';
-  public selected_address: string = this.default_address_text
-
-  //public addresses:string[] = []
-
-  @Input() 
-    public set selected_wallet_id(val: number) {
-      if (val !== undefined){
-        var selected_wallet:any = this.wallet_service.getWalletById(val)
-
-        if (selected_wallet !== undefined){
-          this.sendTransactionForm.get('walletSendName')?.setValue(selected_wallet.name)
-          this.wallet = selected_wallet;
-        }
-      }
-    }
+  public validation_message: string    = '';
+  public selected_address: string      = this.default_address_text;
 
   @Input() 
     public set selected_wallet_coin(val: WalletCoin) {
       if ('denom' in val){
+        const selected_wallet:any = this.wallet_service.getWalletById(val.wallet_id)
+        if (selected_wallet !== undefined){
           this.coin = val;
 
           this.sendMax = this.coin.formatted;
           this.send75  = this.coin.formatted * 0.75;
           this.send50  = this.coin.formatted * 0.5;
           this.send25  = this.coin.formatted * 0.25;
+
+          this.sendTransactionForm.get('walletSendName')?.setValue(selected_wallet.name)
+          }
         }
     }
 
+  // This is received from the parent component, but is also found in the persistables service
   @Input() address_list:string[] = []
     
+  // The send transaction form object
   sendTransactionForm = new FormGroup({
     walletSendName: new FormControl(''),
     walletSendAddress: new FormControl(''),
@@ -71,30 +64,28 @@ export class SendComponent {
    * @param $event
    */
   selectAddress($event:MouseEvent){
-    var target:any = $event.target;
+    var target:any        = $event.target;
     this.selected_address = target.innerHTML;
   }
 
   /**
    * Using the provided transaction amount, update the form with the percentage amount.
-   * @param percentage
+   * @param transaction
    */
   populateAmount(transaction: TransactionItem){
     const amount:string = String(this.coin.formatted * Number(transaction.percentage));
-
-    this.sendTransactionForm.get('sendTransactionAmount')?.setValue(amount)
+    this.sendTransactionForm.get('sendTransactionAmount')?.setValue(amount);
   }
 
   /**
-   * W
+   * With the provided details, validate the amount and address and then get confirmation to send
    */
   sendTransaction(){
     // Validate the amount:
-    const user_amount:string = String(this.sendTransactionForm.value.sendTransactionAmount?.trim())
-
-    let send_amount: number = 0;
+    const user_amount:string          = String(this.sendTransactionForm.value.sendTransactionAmount?.trim())
+    let send_amount: number           = 0;
     let send_amount_formatted: number = 0;
-    let result: TransactionItem = {} as TransactionItem
+    let result: TransactionItem       = {} as TransactionItem
     
     // This could be a percentage value, or a number, or comma'd
     if (user_amount[user_amount.length - 1] == '%'){
@@ -105,7 +96,7 @@ export class SendComponent {
       send_amount_formatted = this.coin.formatted * percentage
     } else {
       // Not a percentage, but we need to remove commas
-      send_amount = this.wallet_service.formatAmountToBase(Number(user_amount.replaceAll(',', '')), this.coin.denom)
+      send_amount           = this.wallet_service.formatAmountToBase(Number(user_amount.replaceAll(',', '')), this.coin.denom)
       send_amount_formatted = Number(user_amount.replaceAll(',', ''))
     }
 
@@ -128,11 +119,9 @@ export class SendComponent {
       result.formatted = send_amount_formatted;
       result.denom     = this.coin.denom
       result.readable  = this.coin.readable
-
-      console.log('final result:', result)
       
       const confirm_send = this.modalService.open(NgbdModalConfirmAutofocus);
-
+      
       confirm_send.componentInstance.readable_amount = result.formatted + ' ' + result.readable;
       confirm_send.componentInstance.recipient_address = this.selected_address;
 
