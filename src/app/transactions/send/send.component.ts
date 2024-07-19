@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input, Type } from '@angular/core';
-import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject, Input } from '@angular/core';
+import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { WalletService } from '../../services/wallet.service';
-import { Wallet } from '@geoffmunn/feather.js';
 import { WalletCoin } from '../../interfaces/walletcoin';
 import { TransactionItem } from '../../interfaces/transactionItem';
 import { NgbActiveModal, NgbModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
@@ -17,15 +16,15 @@ import { NgbActiveModal, NgbModal, NgbDropdownModule } from '@ng-bootstrap/ng-bo
 export class SendComponent {
 
   private wallet_service: WalletService = inject(WalletService);
-  private modalService:NgbModal         = inject(NgbModal);
+  private modal_service:NgbModal         = inject(NgbModal);
 
   private coin: WalletCoin = {} as WalletCoin;
 
   // The preset percentage options we can send
-  public sendMax: number = 0;
-  public send75: number  = 0;
-  public send50: number  = 0;
-  public send25: number  = 0;
+  public send_max: number = 0;
+  public send_75: number  = 0;
+  public send_50: number  = 0;
+  public send_25: number  = 0;
 
   private default_address_text: string = 'Select an address...';
   public validation_message: string    = '';
@@ -38,10 +37,10 @@ export class SendComponent {
         if (selected_wallet !== undefined){
           this.coin = val;
 
-          this.sendMax = this.coin.formatted;
-          this.send75  = this.coin.formatted * 0.75;
-          this.send50  = this.coin.formatted * 0.5;
-          this.send25  = this.coin.formatted * 0.25;
+          this.send_max = this.coin.formatted;
+          this.send_75  = this.coin.formatted * 0.75;
+          this.send_50  = this.coin.formatted * 0.5;
+          this.send_25  = this.coin.formatted * 0.25;
 
           this.sendTransactionForm.get('walletSendName')?.setValue(selected_wallet.name)
           }
@@ -120,8 +119,8 @@ export class SendComponent {
       result.denom     = this.coin.denom
       result.readable  = this.coin.readable
       
-      const confirm_send = this.modalService.open(NgbdModalConfirmAutofocus);
-      
+      const confirm_send = this.modal_service.open(NgbdModalConfirmAutofocus);
+
       confirm_send.componentInstance.readable_amount = result.formatted + ' ' + result.readable;
       confirm_send.componentInstance.recipient_address = this.selected_address;
 

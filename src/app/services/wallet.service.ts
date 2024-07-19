@@ -16,11 +16,12 @@ import { HttpClient } from '@angular/common/http';
 
 export class WalletService {
 
-  wallet_list: Wallet[] = [];
-  local_storage: LocalstorageService = new LocalstorageService();
-  key: string = '';
-  terra: LCDClient;
-  balances: BalancesService = new BalancesService();
+  private local_storage: LocalstorageService = new LocalstorageService();
+  private terra: LCDClient;
+  
+  public balances: BalancesService = new BalancesService();
+  public key: string = '';
+  public wallet_list: Wallet[]     = [];
   
   public createAddressFromSeed(seed: string){
 
@@ -66,21 +67,12 @@ export class WalletService {
       return ibc_address;
     }
 
-    // We will use the uri as the key, just to make sure there are no collisions
-    //erc20Tokens[key as keyof typeof erc20Tokens]
-    // const test = (key: string) => {
-    //   console.log(erc20Tokens[key as keyof IERC20Tokens]);
-    // };
-    
-    // test('dai');
-    
-    var value: string = ibc_address.slice(4);
-    //var chain_name: string = CHAIN_DATA['uluna' as keyof COIN_CODES]['cosmos_name']
-    var chain_name: string = CHAIN_DATA[COIN_CODES.ULUNA]['cosmos_name']
-    var uri: string        = 'https://rest.cosmos.directory/' + chain_name + '/ibc/apps/transfer/v1/denom_traces/' + value
+    const value: string      = ibc_address.slice(4);
+    const chain_name: string = CHAIN_DATA[COIN_CODES.ULUNA]['cosmos_name']
+    const uri: string        = 'https://rest.cosmos.directory/' + chain_name + '/ibc/apps/transfer/v1/denom_traces/' + value
 
     // var result = new RequestService().testtest(uri)
-    var denom_name = await new RequestService(this.http).getRequest(uri).then((name) => {
+    const denom_name = await new RequestService(this.http).getRequest(uri).then((name) => {
       return name;
     });
 
@@ -140,7 +132,7 @@ export class WalletService {
    */
   public formatAmountToReadable(base_amount: number, denom: string): number{
 
-    let result: number = 0
+    let result: number              = 0
     const default_precision: number = 6
 
     if (denom in CHAIN_DATA){
@@ -162,7 +154,7 @@ export class WalletService {
    */
   public formatAmountToBase(readable_amount: number, denom: string): number{
 
-    let result: number = 0
+    let result: number              = 0
     const default_precision: number = 6
 
     if (denom in CHAIN_DATA){
@@ -181,11 +173,11 @@ export class WalletService {
    * @returns array
    */
   public getAllWallets(): Wallet[] {
-    let local_storage = new LocalstorageService()
+    const local_storage  = new LocalstorageService()
     let wallets:Wallet[] = []
 
     if (local_storage.getData('wallets')){
-      let local_wallets = JSON.parse(this.decrypt(local_storage.getData('wallets')!))
+      const local_wallets = JSON.parse(this.decrypt(local_storage.getData('wallets')!))
         
       if (local_wallets){
         wallets = local_wallets;
@@ -202,9 +194,8 @@ export class WalletService {
     const balance:Promise<[Coins, Pagination]> = this.terra.bank.balance(address);
 
     await balance.then(async (name) => { 
-      var coins:Coins = name[0];
-
-      var coin_list = coins.toData()
+      const coins:Coins = name[0];
+      const coin_list   = coins.toData()
 
       for (var i = 0; i < coin_list.length; i++){
         var denom_result: string = await this.denomTrace(coin_list[i].denom).then ((name) => {
@@ -212,11 +203,9 @@ export class WalletService {
         })
 
         if (denom_result != undefined){
-          let key = Object.keys(COIN_CODES).find(key => COIN_CODES[key] === denom_result);
+          let key              = Object.keys(COIN_CODES).find(key => COIN_CODES[key] === denom_result);
           let formatted_amount = this.formatAmountToReadable(Number(coin_list[i].amount), denom_result)
-          console.log (denom_result, coin_list[i].amount)
-          console.log (denom_result, ':', formatted_amount)
-          //if (formatted_amount != 0){
+
           if (key !== undefined){
             var coin: WalletCoin = {
               amount: Number(coin_list[i].amount),
@@ -227,28 +216,26 @@ export class WalletService {
             }
 
             this.balances.balances.set(denom_result, coin)
-            //this.balances.balances[denom_result] = coin
           }
-          //}  
         }
       }
     })
 
+    // Get all the meme coins etc
     var keys = Object.keys(NON_ULUNA_COINS)
     for (var i = 0; i < keys.length; i++){
       if (COIN_ALIASES[NON_ULUNA_COINS[keys[i]]] !== undefined){
         var non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery(NON_ULUNA_COINS[keys[i]], {'balance':{'address':address}})  
 
-        await non_uluna_balance.then((name: any) => {
-          var x:any = name
-          let formatted_amount = this.formatAmountToReadable(Number(x.balance), COIN_ALIASES[NON_ULUNA_COINS[keys[i]]])
+        await non_uluna_balance.then((item: any) => {
+          let formatted_amount = this.formatAmountToReadable(Number(item.balance), COIN_ALIASES[NON_ULUNA_COINS[keys[i]]])
           
           var coin: WalletCoin = {
-            amount: Number(x.balance),
+            amount: Number(item.balance),
             denom: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]],
             formatted: formatted_amount,
             readable: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]],
-            wallet_id: x.id
+            wallet_id: 0
           }
 
           this.balances.balances.set(COIN_ALIASES[NON_ULUNA_COINS[keys[i]]], coin)
@@ -266,8 +253,8 @@ export class WalletService {
    * @returns number
    */
   private getNextWalletID(): number {
-    let wallet_id: number = 1
 
+    let wallet_id: number        = 1
     let current_wallets:Wallet[] = this.getAllWallets();
 
     if (current_wallets.length > 0){
@@ -299,6 +286,7 @@ export class WalletService {
   public newWallet(wallet_name: string, wallet_address: string, wallet_seed: string): boolean {
     
     const wallet_id: number = this.getNextWalletID();
+
     this.wallet_list.push({'id': wallet_id, 'name': wallet_name, 'address': wallet_address, 'seed': wallet_seed})    
     this.local_storage.saveData('wallets', this.encrypt(JSON.stringify(this.wallet_list)))
 
@@ -320,5 +308,4 @@ export class WalletService {
     this.terra = new LCDClient(config)
 
   }
-
 }
