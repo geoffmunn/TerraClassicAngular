@@ -13,8 +13,7 @@ import { CommonModule } from '@angular/common';
 
 export class NewWalletComponent {
   
-  walletService = inject(WalletService);
-  walletAddress: string = '';
+  wallet_service = inject(WalletService);
 
   newWalletForm = new FormGroup({
     walletName: new FormControl(''),
@@ -28,7 +27,7 @@ export class NewWalletComponent {
    * Build the wallet form object
    */
   newWallet() {
-    this.walletService.newWallet(
+    this.wallet_service.newWallet(
       this.newWalletForm.value.walletName ?? '',
       this.newWalletForm.value.walletAddress ?? '',
       this.newWalletForm.value.walletSeed ?? '',
@@ -40,7 +39,7 @@ export class NewWalletComponent {
    * 
    * @param $event
    */
-  generateAddress($event: any){
-    this.newWalletForm.get('walletAddress')?.setValue(this.walletService.createAddressFromSeed($event.target.value));
+  generateAddress($event: Event){
+    this.newWalletForm.get('walletAddress')?.setValue(this.wallet_service.createAddressFromSeed(($event.target as HTMLInputElement).value));
   }
 }
