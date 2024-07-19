@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
-
 import { Wallet } from '../interfaces/wallet';
 
 @Component({
@@ -11,7 +10,5 @@ import { Wallet } from '../interfaces/wallet';
   styleUrl: './wallet-item.component.css'
 })
 export class WalletItemComponent {
-
   @Input() wallet!: Wallet;
-
 }
