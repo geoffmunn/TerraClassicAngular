@@ -1,17 +1,18 @@
 import { Component, inject } from '@angular/core';
 import { WalletService } from '../services/wallet.service';
 import { WalletListComponent } from '../admin/wallet-list/wallet-list.component';
-import { WalletPasswordComponent } from '../admin/wallet-password/wallet-password.component';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ModalWalletPassword } from '../admin/wallet-password/wallet-password.component';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SendComponent } from '../transactions/send/send.component';
 import { WalletCoin } from '../interfaces/walletcoin';
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PersistablesService } from '../services/persistables.service';
+import { AddressBookService } from '../services/address-book.service';
+
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [WalletListComponent, WalletPasswordComponent, SendComponent],
+  imports: [WalletListComponent, SendComponent, RouterLink],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
@@ -19,16 +20,14 @@ import { PersistablesService } from '../services/persistables.service';
 export class HomeComponent {
 
   private wallet_service: WalletService = inject(WalletService);
-  private route: ActivatedRoute = inject(ActivatedRoute);
-  private modalService = inject(NgbModal);
-  
-  public persistables = inject(PersistablesService);
+  private route: ActivatedRoute         = inject(ActivatedRoute);
+  private modalService                  = inject(NgbModal);
+  public persistables                   = inject(PersistablesService);
 
   public decryption_password              = '';
-  //public send_address: string             = '';
   public selected_wallet_id: number       = 0;
   public selected_wallet_coin: WalletCoin = {} as WalletCoin
-  //public address_list: string[]           = []
+  public address_list: string[]           = []
 
   /**
    * This takes the selected coin from the table and passes it to the send component
@@ -36,11 +35,11 @@ export class HomeComponent {
    */
   selectWalletCoin(wallet_coin:WalletCoin){
     this.selected_wallet_coin = wallet_coin;
-    this.selected_wallet_id = wallet_coin.wallet_id!;
+    this.selected_wallet_id   = wallet_coin.wallet_id!;
 
     // Get the addresses that we can send to:
     for (var i = 0; i < this.wallet_service.wallet_list.length; i++){
-      this.persistables.address_book.push(this.wallet_service.wallet_list[i].address)
+      this.address_list.push(this.wallet_service.wallet_list[i].address)
     }
   }
 
@@ -62,7 +61,7 @@ export class HomeComponent {
     }
 
     if (this.persistables.decryption_password == ''){
-      const test = this.modalService.open(NgbdModalConfirmAutofocus);
+      const test = this.modalService.open(ModalWalletPassword);
 
       test.result.then(() => {
         this.decryption_password = test.componentInstance.walletPassword.value.walletPassword
@@ -76,43 +75,4 @@ export class HomeComponent {
       this.decryption_password = this.persistables.decryption_password
     }
   }
-}
-
-@Component({
-	selector: 'ngbd-modal-confirm-autofocus',
-	standalone: true,
-  imports: [FormsModule, ReactiveFormsModule],
-	template: `
-		<div class="modal-header">
-			<h4 class="modal-title" id="modal-title">Wallet password</h4>
-			<button
-				type="button"
-				class="btn-close"
-				aria-label="Close button"
-				aria-describedby="modal-title"
-				(click)="modal.dismiss('Cross click')"
-			></button>
-		</div>
-		<div class="modal-body">
-      <form [formGroup]="walletPassword">
-          <label for="wallet-password">Wallet Password</label>
-          <input id="wallet-password" type="password" formControlName="walletPassword" />
-      </form>
-		</div>
-		<div class="modal-footer">
-			<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
-			<button type="button" ngbAutofocus class="btn btn-danger" (click)="modal.close('Ok click')">Ok</button>
-		</div>
-	`,
-})
-
-export class NgbdModalConfirmAutofocus {
-	modal = inject(NgbActiveModal);
-
-  walletPassword = new FormGroup({
-    walletPassword: new FormControl(''),
-  });
-  // @Input() readable_amount: string = '';
-  // @Input() recipient_address: string = '';
-
 }
