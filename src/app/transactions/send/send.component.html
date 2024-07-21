@@ -5,7 +5,7 @@
         <input id="wallet-send-name" type="text" formControlName="walletSendName" />
         <label for="wallet-send-address">Wallet address</label>
         <div ngbDropdown class="d-inline-block">
-            <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle formControlName="walletSendAddress">
+            <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle formControlName="walletSendAddress" ngDefaultControl>
                 {{ selected_address }}
             </button>
             <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
