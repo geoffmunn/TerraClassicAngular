@@ -1,12 +1,10 @@
-<app-new-wallet></app-new-wallet>
-
 <div>
     <h1>Wallet list</h1>
     <table>
         <thead>
             <tr>
                 <th scope="col">Coin</th>
-                <th score="col" *ngFor="let wallet of wallet_service.wallet_list"><a [routerLink]="['/details', wallet.id]">{{ wallet.name }}</a></th>
+                <th score="col" *ngFor="let wallet of wallet_service.wallet_list"><a [routerLink]="['/wallet', wallet.id]">{{ wallet.name }}</a></th>
 
             </tr>
         </thead>
