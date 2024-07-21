@@ -2,7 +2,6 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { WalletItemComponent } from '../../wallet-item/wallet-item.component';
 import { CommonModule } from '@angular/common';
 import { WalletService } from '../../services/wallet.service';
-import { NewWalletComponent } from '../new-wallet/new-wallet.component';
 import { BalancesService } from '../../services/balances.service';
 import { WalletCoin } from '../../interfaces/walletcoin';
 
@@ -12,7 +11,7 @@ import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-wallet-list',
   standalone: true,
-  imports: [CommonModule, WalletItemComponent, NewWalletComponent, RouterModule],
+  imports: [CommonModule, WalletItemComponent, RouterModule],
   templateUrl: './wallet-list.component.html',
   styleUrl: './wallet-list.component.css'
 })
@@ -21,10 +20,10 @@ export class WalletListComponent {
 
   public wallet_service: WalletService = inject(WalletService);
   
-  public all_coins: { [key: string]: WalletCoin } = {}
+  public all_coins: { [key: string]: WalletCoin }   = {}
   private _all_coins: { [key: string]: WalletCoin } = {}
 
-  public wallet_balances: { [key: string]: any } = {}
+  public wallet_balances: { [key: string]: any }   = {}
   private _wallet_balances: { [key: string]: any } = {}
 
   @Input() 
