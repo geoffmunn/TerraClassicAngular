@@ -5,6 +5,7 @@ import { WalletService } from '../../services/wallet.service';
 import { WalletCoin } from '../../interfaces/walletcoin';
 import { TransactionItem } from '../../interfaces/transactionItem';
 import { NgbActiveModal, NgbModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmSendComponent } from '../../modals/confirm-send/confirm-send.component';
 @Component({
   selector: 'app-send',
   standalone: true,
@@ -119,7 +120,7 @@ export class SendComponent {
       result.denom     = this.coin.denom
       result.readable  = this.coin.readable
       
-      const confirm_send = this.modal_service.open(NgbdModalConfirmAutofocus);
+      const confirm_send = this.modal_service.open(ConfirmSendComponent);
 
       confirm_send.componentInstance.readable_amount = result.formatted + ' ' + result.readable;
       confirm_send.componentInstance.recipient_address = this.selected_address;
@@ -135,39 +136,5 @@ export class SendComponent {
     }
   }
 }
-@Component({
-	selector: 'ngbd-modal-confirm-autofocus',
-	standalone: true,
-	template: `
-		<div class="modal-header">
-			<h4 class="modal-title" id="modal-title">Send confirmation</h4>
-			<button
-				type="button"
-				class="btn-close"
-				aria-label="Close button"
-				aria-describedby="modal-title"
-				(click)="modal.dismiss('Cross click')"
-			></button>
-		</div>
-		<div class="modal-body">
-			<p>
-				<strong>Are you sure you want to send <span class="text-primary">{{ readable_amount }}</span> to <span class="send-address">{{ recipient_address }}</span></strong>
-			</p>
-			<p>
-				<span class="text-danger">This transaction can not be undone.</span>
-			</p>
-		</div>
-		<div class="modal-footer">
-			<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
-			<button type="button" ngbAutofocus class="btn btn-danger" (click)="modal.close('Ok click')">Ok</button>
-		</div>
-	`,
-})
 
-export class NgbdModalConfirmAutofocus {
-	modal = inject(NgbActiveModal);
-
-  @Input() readable_amount: string = '';
-  @Input() recipient_address: string = '';
-}
 export class NgbdDropdownBasic {}
