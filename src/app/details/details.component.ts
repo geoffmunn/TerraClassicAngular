@@ -6,9 +6,6 @@ import { Wallet } from '../interfaces/wallet';
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import { PersistablesService } from '../services/persistables.service';
 
-//import {HousingService} from '../housing.service';
-//import {HousingLocation} from '../housinglocation';
-
 @Component({
   selector: 'app-details',
   standalone: true,
@@ -20,8 +17,8 @@ import { PersistablesService } from '../services/persistables.service';
 export class DetailsComponent {
 
   route: ActivatedRoute = inject(ActivatedRoute);
-  walletService = inject(WalletService);
-  persistables = inject(PersistablesService)
+  walletService         = inject(WalletService);
+  persistables          = inject(PersistablesService)
 
   walletItem: Wallet | undefined;
 
@@ -34,11 +31,8 @@ export class DetailsComponent {
   /**
    * Based on the ID in the URL, get the wallet that matches it.
    */
-  constructor() {
-    console.log ('persisted password:', this.persistables.decryption_password)
-    
+  constructor() {    
     const walletID = Number(this.route.snapshot.params['id']);
-
     this.walletItem = this.walletService.getWalletById(walletID);
   }
 }
