@@ -16,7 +16,7 @@ import { HttpClient } from '@angular/common/http';
 
 export class WalletService {
 
-  private local_storage: LocalstorageService = new LocalstorageService();
+  protected local_storage: LocalstorageService = new LocalstorageService();
   private terra: LCDClient;
   
   public balances: BalancesService = new BalancesService();
@@ -87,7 +87,12 @@ export class WalletService {
    * @returns string
    */
   public encrypt(text_item: string): string {
-    return CryptoJS.AES.encrypt(text_item, this.key).toString();
+    if (this.key != ''){
+      return CryptoJS.AES.encrypt(text_item, this.key).toString();
+    } else {
+      return '';
+    }
+
   }
 
   /**
@@ -97,7 +102,11 @@ export class WalletService {
    * @returns string
    */
   public decrypt(encrypted_item: string) {
+    if (this.key != ''){
       return CryptoJS.AES.decrypt(encrypted_item, this.key).toString(CryptoJS.enc.Utf8);
+    } else {
+      return '';
+    }
   }
 
   /**
