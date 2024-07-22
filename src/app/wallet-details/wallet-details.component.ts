@@ -18,19 +18,18 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 export class WalletDetailsComponent {
 
-  private route: ActivatedRoute = inject(ActivatedRoute);
-  private wallet_service:WalletService        = inject(WalletService);
-  private persistables          = inject(PersistablesService)
-  private modalService = inject(NgbModal);
+  private route: ActivatedRoute        = inject(ActivatedRoute);
+  private wallet_service:WalletService = inject(WalletService);
+  private persistables                 = inject(PersistablesService);
+  private modal_service                = inject(NgbModal);
   
-  public wallet_list: Wallet[] = []
+  public wallet_list: Wallet[] = [];
+  public wallet_item: Wallet | undefined;
 
-  public wallet_item : Wallet | undefined;
-
-  public newWalletForm = new FormGroup({
-    walletName: new FormControl(''),
-    walletAddress: new FormControl(''),
-    walletSeed: new FormControl(''),
+  public new_wallet_form = new FormGroup({
+    wallet_name: new FormControl(''),
+    wallet_address: new FormControl(''),
+    wallet_seed: new FormControl(''),
   });
 
   /**
@@ -50,67 +49,62 @@ export class WalletDetailsComponent {
     });
     
     const wallet_action: string = this.route.snapshot.params['action']?.toLowerCase();
-    const wallet_id: number = Number(this.route.snapshot.params['id']);
+    const wallet_id: number     = Number(this.route.snapshot.params['id']);
 
     if (this.persistables.decryption_password == ''){
-      const model_password = this.modalService.open(ModalWalletPassword);
+      const model_password = this.modal_service.open(ModalWalletPassword);
 
       model_password.result.then(() => {
-        this.persistables.decryption_password = model_password.componentInstance.walletPassword.value.walletPassword
-        this.wallet_service.key = this.persistables.decryption_password
+        this.persistables.decryption_password = model_password.componentInstance.walletPassword.value.walletPassword;
+        this.wallet_service.key               = this.persistables.decryption_password;
         
-        this.nextStep(wallet_action, wallet_id)
+        this.nextStep(wallet_action, wallet_id);
       }, 
       () => { 
         // Do nothing, it was cancelled
-        console.log('Backdrop click')
+        console.log('Backdrop click');
         this.router.navigate(['']);
       });
 
     } else {
       // carry on, we already have a password
-      this.wallet_service.key = this.persistables.decryption_password
+      this.wallet_service.key = this.persistables.decryption_password;
 
-      
-      this.nextStep(wallet_action, wallet_id)
+      this.nextStep(wallet_action, wallet_id);
     }
-    
   }
 
+  /**
+   * Based on the action, do some specific steps
+   * 
+   * @param wallet_action 
+   * @param wallet_id 
+   */
   nextStep(wallet_action: string, wallet_id: number){
 
-    this.wallet_list = this.wallet_service.getAllWallets()
+    this.wallet_list = this.wallet_service.getAllWallets();
 
     if (wallet_action == 'delete'){
-      //console.log ('deleting:', wallet_id)
       this.wallet_service.deleteWalletByID(wallet_id);
-      //console.log ('done, redirecting')
       this.router.navigate(['/wallets']);
     }
 
     if (wallet_action == 'view'){
-
-      this.wallet_item = this.wallet_service.getWalletById(wallet_id)
-      //console.log ('wallet item to use:', this.wallet_item)
+      this.wallet_item = this.wallet_service.getWalletById(wallet_id);
     }
-
-    //this.wallet_list = this.wallet_service.getAllWallets()
   }
 
   /**
    * Build the wallet form object
    */
   newWallet() {
-    console.log ('start!')
-    console.log ('wallet list at the start:', this.wallet_list)
-    this.wallet_service.newWallet(
-      this.newWalletForm.value.walletName ?? '',
-      this.newWalletForm.value.walletAddress ?? '',
-      this.newWalletForm.value.walletSeed ?? '',
+    this.wallet_service.new_wallet(
+      this.new_wallet_form.value.wallet_name ?? '',
+      this.new_wallet_form.value.wallet_address ?? '',
+      this.new_wallet_form.value.wallet_seed ?? '',
     );
 
-    this.wallet_list = this.wallet_service.getAllWallets()
-    console.log ('wallet list after add:', this.wallet_list)
+    this.wallet_list = this.wallet_service.getAllWallets();
   }
 
   /**
@@ -119,6 +113,6 @@ export class WalletDetailsComponent {
    * @param $event
    */
   generateAddress($event: Event){
-    this.newWalletForm.get('walletAddress')?.setValue(this.wallet_service.createAddressFromSeed(($event.target as HTMLInputElement).value));
+    this.new_wallet_form.get('wallet_address')?.setValue(this.wallet_service.createAddressFromSeed(($event.target as HTMLInputElement).value));
   }
 }
