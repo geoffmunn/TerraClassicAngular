@@ -7,6 +7,7 @@ import { ModalWalletPassword } from '../admin/wallet-password/wallet-password.co
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddressBookService } from '../services/address-book.service';
 import { Address } from '../interfaces/address';
+import { BasicConfirmComponent } from '../modals/basic-confirm/basic-confirm.component';
 
 @Component({
   selector: 'app-address-book-details',
@@ -84,8 +85,19 @@ export class AddressBookDetailsComponent {
     this.address_list = this.address_book_service.getAllAddresses();
 
     if (address_book_action == 'delete'){
-      this.address_book_service.deleteAddressByID(address_book_id);
-      this.router.navigate(['/addresses']);
+      const confirm_send = this.modal_service.open(BasicConfirmComponent);
+
+      confirm_send.componentInstance.message = 'Are you sure you want to delete this address?';
+
+      confirm_send.result.then(() => {
+        this.address_book_service.deleteAddressByID(address_book_id);
+        this.router.navigate(['/addresses']);
+      }, 
+      () => { 
+        // Do nothing, it was cancelled
+        console.log('Backdrop click')
+      });
+      
     }
 
     if (address_book_action == 'view'){

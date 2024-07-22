@@ -7,6 +7,7 @@ import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import { PersistablesService } from '../services/persistables.service';
 import { ModalWalletPassword } from '../admin/wallet-password/wallet-password.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { BasicConfirmComponent } from '../modals/basic-confirm/basic-confirm.component';
 
 @Component({
   selector: 'app-wallet-details',
@@ -85,8 +86,18 @@ export class WalletDetailsComponent {
     this.wallet_list = this.wallet_service.getAllWallets();
 
     if (wallet_action == 'delete'){
-      this.wallet_service.deleteWalletByID(wallet_id);
-      this.router.navigate(['/wallets']);
+      const confirm_send = this.modal_service.open(BasicConfirmComponent);
+
+      confirm_send.componentInstance.message = 'Are you sure you want to delete this wallet?';
+
+      confirm_send.result.then(() => {
+        this.wallet_service.deleteWalletByID(wallet_id);
+        this.router.navigate(['/wallets']);
+      }, 
+      () => { 
+        // Do nothing, it was cancelled
+        console.log('Backdrop click')
+      });
     }
 
     if (wallet_action == 'view'){

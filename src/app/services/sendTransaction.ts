@@ -1,14 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, lastValueFrom, take } from 'rxjs';
-import { Transaction } from './transaction';
+import { TransactionCore } from './transactionCore';
 //import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class sendTransaction extends Transaction {
+export class sendTransaction extends TransactionCore {
 
   constructor() {
       super();
