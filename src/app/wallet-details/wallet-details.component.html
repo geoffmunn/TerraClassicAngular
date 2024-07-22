@@ -1,0 +1,34 @@
+<p><a [routerLink]="['/']">Home</a></p>
+
+<ul>
+@for (wallet of wallet_list; track wallet.id){
+    <li><a [routerLink]="['/wallets/view', wallet.id]">{{ wallet.name }}</a>  -  {{ wallet.address }}</li>
+}
+@empty {
+    <li>No wallets so far</li>
+}
+</ul>
+
+@if (wallet_item){
+<ul>
+    <li>Wallet name: {{ wallet_item.name }}</li>
+    <li>Wallet address: {{ wallet_item.address }}</li>
+    <li>Wallet seed: {{ wallet_item.seed }}</li>
+
+    <li><a [routerLink]="['/wallets/delete', wallet_item.id]">Delete</a></li>
+</ul>
+}
+
+<section class="new-wallet">
+    <h2 class="section-heading">Add a new wallet</h2>
+    <form [formGroup]="newWalletForm" (submit)="newWallet()">
+        <label for="wallet-name">Wallet Name</label>
+        <input id="wallet-name" type="text" formControlName="walletName" />
+        <label for="wallet-seed">Wallet seed</label>
+        <input id="wallet-seed" type="text" formControlName="walletSeed" (change)="generateAddress($event)" />
+        <label for="wallet-address">Wallet address</label>
+        <input id="wallet-address" type="text" formControlName="walletAddress" />
+        
+        <button type="submit" class="primary">Add wallet</button>
+    </form>
+</section>
