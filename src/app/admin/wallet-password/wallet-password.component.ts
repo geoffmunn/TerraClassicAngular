@@ -15,7 +15,7 @@ export class ModalWalletPassword {
 	
   public modal:NgbActiveModal = inject(NgbActiveModal);
 
-  public walletPassword = new FormGroup({
+  public walletPassword: FormGroup = new FormGroup({
     walletPassword: new FormControl(''),
   });
 }

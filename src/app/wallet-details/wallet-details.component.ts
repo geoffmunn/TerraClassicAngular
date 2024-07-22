@@ -19,15 +19,15 @@ import { BasicConfirmComponent } from '../modals/basic-confirm/basic-confirm.com
 
 export class WalletDetailsComponent {
 
-  private route: ActivatedRoute        = inject(ActivatedRoute);
-  private wallet_service:WalletService = inject(WalletService);
-  private persistables                 = inject(PersistablesService);
-  private modal_service                = inject(NgbModal);
+  private route: ActivatedRoute             = inject(ActivatedRoute);
+  private wallet_service: WalletService     = inject(WalletService);
+  private persistables: PersistablesService = inject(PersistablesService);
+  private modal_service: NgbModal           = inject(NgbModal);
   
   public wallet_list: Wallet[] = [];
   public wallet_item: Wallet | undefined;
 
-  public new_wallet_form = new FormGroup({
+  public new_wallet_form: FormGroup = new FormGroup({
     wallet_name: new FormControl(''),
     wallet_address: new FormControl(''),
     wallet_seed: new FormControl(''),
