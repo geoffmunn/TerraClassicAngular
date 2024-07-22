@@ -17,7 +17,7 @@ import { ConfirmSendComponent } from '../../modals/confirm-send/confirm-send.com
 export class SendComponent {
 
   private wallet_service: WalletService = inject(WalletService);
-  private modal_service:NgbModal         = inject(NgbModal);
+  private modal_service:NgbModal        = inject(NgbModal);
 
   private coin: WalletCoin = {} as WalletCoin;
 
@@ -43,7 +43,7 @@ export class SendComponent {
           this.send_50  = this.coin.formatted * 0.5;
           this.send_25  = this.coin.formatted * 0.25;
 
-          this.sendTransactionForm.get('walletSendName')?.setValue(selected_wallet.name)
+          this.send_transaction_form.get('wallet_send_name')?.setValue(selected_wallet.name)
           }
         }
     }
@@ -52,10 +52,10 @@ export class SendComponent {
   @Input() address_list:string[] = []
     
   // The send transaction form object
-  sendTransactionForm = new FormGroup({
-    walletSendName: new FormControl(''),
-    walletSendAddress: new FormControl(''),
-    sendTransactionAmount: new FormControl(''),
+  public send_transaction_form:FormGroup = new FormGroup({
+    wallet_send_name: new FormControl(''),
+    wallet_send_address: new FormControl(''),
+    send_transaction_amount: new FormControl(''),
   });
 
   /**
@@ -74,7 +74,7 @@ export class SendComponent {
    */
   populateAmount(transaction: TransactionItem){
     const amount:string = String(this.coin.formatted * Number(transaction.percentage));
-    this.sendTransactionForm.get('sendTransactionAmount')?.setValue(amount);
+    this.send_transaction_form.get('send_transaction_amount')?.setValue(amount);
   }
 
   /**
@@ -82,7 +82,7 @@ export class SendComponent {
    */
   sendTransaction(){
     // Validate the amount:
-    const user_amount:string          = String(this.sendTransactionForm.value.sendTransactionAmount?.trim())
+    const user_amount:string          = String(this.send_transaction_form.value.send_transaction_amount?.trim())
     let send_amount: number           = 0;
     let send_amount_formatted: number = 0;
     let result: TransactionItem       = {} as TransactionItem

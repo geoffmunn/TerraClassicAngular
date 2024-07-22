@@ -7,7 +7,7 @@ import { WalletCoin } from '../interfaces/walletcoin';
 
 export class BalancesService {
 
-  balances: Map<string, WalletCoin>
+  balances: Map<string, WalletCoin>;
 
   constructor() { 
     this.balances = new Map<string, WalletCoin>();

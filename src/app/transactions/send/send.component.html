@@ -1,11 +1,11 @@
 <section class="send-transaction">
     <h2 class="section-heading">Send transaction</h2>
-    <form [formGroup]="sendTransactionForm" (submit)="sendTransaction()">
+    <form [formGroup]="send_transaction_form" (submit)="sendTransaction()">
         <label for="wallet-send-name">Wallet Name</label>
-        <input id="wallet-send-name" type="text" formControlName="walletSendName" />
+        <input id="wallet-send-name" type="text" formControlName="wallet_send_name" />
         <label for="wallet-send-address">Wallet address</label>
         <div ngbDropdown class="d-inline-block">
-            <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle formControlName="walletSendAddress" ngDefaultControl>
+            <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle formControlName="wallet_send_address" ngDefaultControl>
                 {{ selected_address }}
             </button>
             <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
@@ -15,7 +15,7 @@
             </div>
         </div>
         <label for="send-transaction-amount">Amount</label>
-        <input id="send-transaction-amount" type="text" formControlName="sendTransactionAmount" />
+        <input id="send-transaction-amount" type="text" formControlName="send_transaction_amount" />
         <div id="sendValidationError">{{ validation_message }}</div>
         <div id="sendAmountPresets"><ul><li id="sendMax">Max: <span (click)="populateAmount({'percentage': 1})">{{ send_max }}</span></li><li id="send75">75%: <span (click)="populateAmount({'percentage': 0.75})" >{{ send_75 }}</span></li><li id="send50">50%: <span (click)="populateAmount({'percentage': 0.5})">{{ send_50 }}</span></li><li id="send25">25%: <span (click)="populateAmount({'percentage': 0.25})">{{ send_25 }}</span></li></ul></div>
         <button type="submit" class="primary">Send</button>

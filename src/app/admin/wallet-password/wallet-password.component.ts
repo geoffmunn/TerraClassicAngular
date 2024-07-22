@@ -12,9 +12,10 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 })
 
 export class ModalWalletPassword {
-	modal = inject(NgbActiveModal);
+	
+  public modal:NgbActiveModal = inject(NgbActiveModal);
 
-  walletPassword = new FormGroup({
+  public walletPassword = new FormGroup({
     walletPassword: new FormControl(''),
   });
 }

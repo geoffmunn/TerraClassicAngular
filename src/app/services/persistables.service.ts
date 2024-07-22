@@ -6,7 +6,5 @@ import { Injectable } from '@angular/core';
 
 export class PersistablesService {
 
-  //address_book: string[] = []
-  decryption_password: string = ''
-  
+  decryption_password: string = '';  
 }

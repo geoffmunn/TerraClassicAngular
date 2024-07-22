@@ -1,5 +1,7 @@
 <a [routerLink]="['/addresses']">Address book</a>
 
+<a [routerLink]="['/wallets']">Wallet management</a>
+
 <app-wallet-list [password]="decryption_password" (selectedWalletCoin)="selectWalletCoin($event)"></app-wallet-list> 
 
 <app-send [selected_wallet_coin]="selected_wallet_coin" [address_list]="address_list"></app-send>

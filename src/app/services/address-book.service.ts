@@ -9,10 +9,10 @@ import { WalletService } from './wallet.service';
 
 export class AddressBookService extends WalletService {
 
-  public address_list: Address[]     = [];
+  public address_list: Address[] = [];
 
   /**
-   * Go through all the addresses and rebuild the list minus the id of the address we don't want.
+   * Go through all the address book items and rebuild the list minus the id of the address we don't want.
    * 
    * @param id 
    * @returns boolean
@@ -20,6 +20,10 @@ export class AddressBookService extends WalletService {
   public deleteAddressByID(id: number): boolean {
 
     var new_list: Address[] = [];
+
+    if (this.address_list.length == 0){
+      this.getAllAddresses();
+    }
 
     this.address_list.forEach(function(address){
       if (address.id != id){
@@ -34,51 +38,46 @@ export class AddressBookService extends WalletService {
   }
 
   /**
-   * Get all the addresses in the local storage object
+   * Get all the addresses in the local storage object.
+   * This will also update the address_list object.
    * If none exist, return an empty array
    * 
    * @returns array
    */
   public getAllAddresses(): Address[] {
 
-    const local_storage  = new LocalstorageService()
-    let addresses: Address[] = []
+    const local_storage  = new LocalstorageService();
 
     if (local_storage.getData('addresses')){
-      //console.log (this.decrypt(local_storage.getData('addresses')!))
-
-      //console.log (JSON.parse(this.decrypt(local_storage.getData('addresses')!)))
-      const decrypted_string = this.decrypt(local_storage.getData('addresses')!);
-      console.log ('decrypted string:', decrypted_string)
+      let decrypted_string: string = this.decrypt(local_storage.getData('addresses')!);
       if (decrypted_string != ''){
-        const local_addresses = JSON.parse(decrypted_string)
+        let local_addresses:any = JSON.parse(decrypted_string);
           
         if (local_addresses){
-          addresses = local_addresses;
+          this.address_list = local_addresses;
         }
       }
     }
-
-    console.log ('all addresses:', addresses)
-    return addresses;
+    
+    return this.address_list;
   }
 
   /**
-   * Figure out the next ID number based on existing address book items.
+   * Figure out the next ID number based on existing addresses.
    * This is not a contiguous list - it just looks at the last id
    * 
    * @returns number
    */
   private getNextAddressID(): number {
 
-    let address_id: number        = 1
+    let address_id: number          = 1
     let current_addresses:Address[] = this.getAllAddresses();
-
+    
     if (current_addresses.length > 0){
-      address_id = current_addresses.pop()!.id + 1
+      address_id = current_addresses[current_addresses.length - 1].id + 1;
     }
 
-    return address_id
+    return address_id;
   }
 
   /**
@@ -88,6 +87,7 @@ export class AddressBookService extends WalletService {
    * @returns Address or undefined if target does not exist
    */
   public getAddressById(id: number): Address | undefined {
+
     return this.address_list.find((address) => address.id === id);
   }
 
@@ -103,16 +103,9 @@ export class AddressBookService extends WalletService {
     
     const address_id: number = this.getNextAddressID();
 
-    console.log ('****************')
-    console.log ('id:', address_id)
-    console.log ('existing addresses:', this.address_list)
-    console.log ('current encryption key:', this.key)
+    this.address_list.push({'id': address_id, 'name': address_name, 'address': address});
+    this.local_storage.saveData('addresses', this.encrypt(JSON.stringify(this.address_list)));
 
-    this.address_list.push({'id': address_id, 'name': address_name, 'address': address})    
-    this.local_storage.saveData('addresses', this.encrypt(JSON.stringify(this.address_list)))
-
-    console.log ('address list we now have:', this.address_list)
-    console.log ('^^^^^^^^^^^^^^^^')
     return true;
   }
 }

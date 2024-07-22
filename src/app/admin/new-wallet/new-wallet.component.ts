@@ -14,12 +14,12 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 export class NewWalletComponent {
   
-  wallet_service = inject(WalletService);
+  public wallet_service:WalletService = inject(WalletService);
 
-  newWalletForm = new FormGroup({
-    walletName: new FormControl(''),
-    walletAddress: new FormControl(''),
-    walletSeed: new FormControl(''),
+  public new_wallet_form:FormGroup = new FormGroup({
+    wallet_name: new FormControl(''),
+    wallet_address: new FormControl(''),
+    wallet_seed: new FormControl(''),
   });
 
   constructor() {}
@@ -28,10 +28,10 @@ export class NewWalletComponent {
    * Build the wallet form object
    */
   newWallet() {
-    this.wallet_service.newWallet(
-      this.newWalletForm.value.walletName ?? '',
-      this.newWalletForm.value.walletAddress ?? '',
-      this.newWalletForm.value.walletSeed ?? '',
+    this.wallet_service.new_wallet(
+      this.new_wallet_form.value.wallet_name ?? '',
+      this.new_wallet_form.value.wallet_address ?? '',
+      this.new_wallet_form.value.wallet_seed ?? '',
     );
   }
 
@@ -41,6 +41,6 @@ export class NewWalletComponent {
    * @param $event
    */
   generateAddress($event: Event){
-    this.newWalletForm.get('walletAddress')?.setValue(this.wallet_service.createAddressFromSeed(($event.target as HTMLInputElement).value));
+    this.new_wallet_form.get('wallet_address')?.setValue(this.wallet_service.createAddressFromSeed(($event.target as HTMLInputElement).value));
   }
 }

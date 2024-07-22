@@ -4,7 +4,7 @@
         <thead>
             <tr>
                 <th scope="col">Coin</th>
-                <th score="col" *ngFor="let wallet of wallet_service.wallet_list"><a [routerLink]="['/wallet', wallet.id]">{{ wallet.name }}</a></th>
+                <th score="col" *ngFor="let wallet of wallet_service.wallet_list"><a [routerLink]="['/wallets/view', wallet.id]">{{ wallet.name }}</a></th>
 
             </tr>
         </thead>

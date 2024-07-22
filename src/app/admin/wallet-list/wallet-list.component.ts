@@ -1,5 +1,5 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { WalletItemComponent } from '../../wallet-item/wallet-item.component';
+//import { WalletItemComponent } from '../../wallet-item/wallet-item.component';
 import { CommonModule } from '@angular/common';
 import { WalletService } from '../../services/wallet.service';
 import { BalancesService } from '../../services/balances.service';
@@ -11,7 +11,7 @@ import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-wallet-list',
   standalone: true,
-  imports: [CommonModule, WalletItemComponent, RouterModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './wallet-list.component.html',
   styleUrl: './wallet-list.component.css'
 })
@@ -30,7 +30,7 @@ export class WalletListComponent {
     public set password(val: any) {
       if (val != ''){
         this.wallet_service.key = val;
-        this.create_list()
+        this.create_list();
       }
     }
     
@@ -51,16 +51,17 @@ export class WalletListComponent {
   private async get_wallet_balances(){
     
     // Get the raw balances for each wallet and attach it to the object
-    //for (var i = 0; i < this.wallet_service.wallet_list.length; i++){
-      var i = 8;
-      var balances:BalancesService = await this.wallet_service.getBalances(this.wallet_service.wallet_list[i].address)
+    for (var i = 0; i < this.wallet_service.wallet_list.length; i++){
+      if (i in this.wallet_service.wallet_list){
+        var balances:BalancesService = await this.wallet_service.getBalances(this.wallet_service.wallet_list[i].address);
 
-      balances.balances.forEach((item:WalletCoin) => {
-        this._all_coins[item.denom] = item
-      })
+        balances.balances.forEach((item:WalletCoin) => {
+          this._all_coins[item.denom] = item;
+        })
 
-      this._wallet_balances[this.wallet_service.wallet_list[i].name] = _.cloneDeep(balances.balances)
-    //}
+        this._wallet_balances[this.wallet_service.wallet_list[i].name] = _.cloneDeep(balances.balances);
+      }
+    }
 
     // Go through each wallet and add any missing coins from the allCoins list
     for (var wallet_balance_key in this._wallet_balances){
@@ -74,13 +75,13 @@ export class WalletListComponent {
             wallet_id: 0
           }
 
-          this._wallet_balances[wallet_balance_key].set(all_coins_key, coin)
+          this._wallet_balances[wallet_balance_key].set(all_coins_key, coin);
         }
       }
     }
     
-    this.all_coins = this._all_coins
-    this.wallet_balances = this._wallet_balances
+    this.all_coins       = this._all_coins;
+    this.wallet_balances = this._wallet_balances;
   }
 
   /**
@@ -92,10 +93,10 @@ export class WalletListComponent {
     if (this.wallet_service.key != '') {
       try {
         // Get all the wallets in our localStorage object
-        this.wallet_service.wallet_list = this.wallet_service.getAllWallets()
+        this.wallet_service.wallet_list = this.wallet_service.getAllWallets();
 
         //Get the balance for each wallet
-        this.get_wallet_balances()
+        this.get_wallet_balances();
 
         return true;
 
@@ -111,12 +112,14 @@ export class WalletListComponent {
 
   updateSendForm(wallet_id: number, coin_denom: string){
     
-    let result:WalletCoin = {} as WalletCoin
-    result = this.all_coins[coin_denom]
+    let result:WalletCoin = {} as WalletCoin;
+
+    result           = this.all_coins[coin_denom];
     result.wallet_id = wallet_id;
 
     this.selectedWalletCoin.emit(this.all_coins[coin_denom]);
   }
+
   constructor() {}
   
 }

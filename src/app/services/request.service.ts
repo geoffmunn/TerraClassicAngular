@@ -24,9 +24,9 @@ export class RequestService {
   }
 
   async getRequest(uri: string) {
-    var result = await this.fetch(uri);
+    let result = await this.fetch(uri);
     
-    return result
+    return result;
   }
 
 }

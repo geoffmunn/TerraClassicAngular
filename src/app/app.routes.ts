@@ -1,8 +1,7 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { WalletDetailsComponent } from './wallet-details/wallet-details.component';
-import { NewWalletComponent } from './admin/new-wallet/new-wallet.component';
-import { AddressBookComponent } from './admin/address-book/address-book.component';
+import { AddressBookDetailsComponent } from './address-book-details/address-book-details.component';
 
 export const routes: Routes = [
     {
@@ -21,8 +20,13 @@ export const routes: Routes = [
         title: 'Wallet details',
     },
     {
+        path: 'addresses/:action/:id',
+        component: AddressBookDetailsComponent,
+        title: 'Address details'
+    },
+    {
         path: 'addresses',
-        component: AddressBookComponent,
+        component: AddressBookDetailsComponent,
         title: 'New address'
     }
 
