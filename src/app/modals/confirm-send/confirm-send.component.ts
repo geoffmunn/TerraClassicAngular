@@ -12,6 +12,6 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 export class ConfirmSendComponent {
   modal = inject(NgbActiveModal);
 
-  @Input() readable_amount: string = '';
+  @Input() readable_amount: string   = '';
   @Input() recipient_address: string = '';
 }
