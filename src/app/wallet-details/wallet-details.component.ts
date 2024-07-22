@@ -9,7 +9,7 @@ import { ModalWalletPassword } from '../admin/wallet-password/wallet-password.co
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'app-details',
+  selector: 'app-wallet-details',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './wallet-details.component.html',
