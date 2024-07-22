@@ -1,0 +1,30 @@
+<p><a [routerLink]="['/']">Home</a></p>
+
+<ul>
+@for (address of address_list; track address.id){
+    <li><a [routerLink]="['/addresses/view', address.id]">{{ address.name }}</a>  -  {{ address.address }}</li>
+}
+@empty {
+    <li>No addresses so far</li>
+}
+</ul>
+
+@if (address_book_item){
+<ul>
+    <li>Address name: {{ address_book_item.name }}</li>
+    <li>Address address: {{ address_book_item.address }}</li>
+    <li><a [routerLink]="['/addresses/delete', address_book_item.id]">Delete</a></li>
+</ul>
+}
+
+<section class="new-address">
+    <h2 class="section-heading">Add a new address</h2>
+    <form [formGroup]="new_address_form" (submit)="newAddress()">
+        <label for="address-name">Address Name</label>
+        <input id="address-name" type="text" formControlName="address_name" />
+        <label for="address">Address</label>
+        <input id="address" type="text" formControlName="address" />
+        
+        <button type="submit" class="primary">Add address</button>
+    </form>
+</section>
