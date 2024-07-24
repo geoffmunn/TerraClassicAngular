@@ -1,32 +1,37 @@
-import { Injectable } from '@angular/core';
-import { Wallet } from '../interfaces/wallet';
-import { LocalstorageService } from './localstorage.service';
+import { inject, Injectable } from '@angular/core';
+import { LocalWallet } from '../interfaces/localWallet';
+//import { LocalstorageService } from './localstorage.service';
 import CryptoJS from 'crypto-js';
 import { LCDClient, Coins, MnemonicKey } from '@geoffmunn/feather.js';
 import { Pagination, PaginationOptions } from '@geoffmunn/feather.js/dist/client/lcd/APIRequester';
-import { WalletCoin } from '../interfaces/walletcoin';
+import { WalletCoin } from '../interfaces/walletCoin';
 import { RequestService } from './request.service';
 import { CHAIN_DATA, COIN_CODES, FULL_COIN_LOOKUP, NON_ULUNA_COINS, COIN_ALIASES } from '../constants'
 import { BalancesService } from './balances.service';
-import { HttpClient } from '@angular/common/http';
+import { LocalStorage } from '../classes/local-storage';
+//import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class WalletService {
+export class LocalStorageWallet {
 
-  protected local_storage: LocalstorageService = new LocalstorageService();
+  //protected local_storage: LocalstorageService = new LocalstorageService();
+  protected local_storage: LocalStorage = new LocalStorage();
+  private request_service: RequestService = inject(RequestService);
   private terra: LCDClient;
   
   public balances: BalancesService = new BalancesService();
   public key: string               = '';
-  public wallet_list: Wallet[]     = [];
+  public wallet_list: LocalWallet[]     = [];
   
   /**
-   * Based on the provided seed phrase, generate a valid address
+   * Based on the provided seed phrase, generate a valid address.
+   * The seed needs to be passed as an attribute because it might be user-provided (the 'new wallet' function)
    * 
    * @param seed 
+   * 
    * @returns string
    */
   public createAddressFromSeed(seed: string){
@@ -81,7 +86,8 @@ export class WalletService {
     const chain_name: string = CHAIN_DATA[COIN_CODES.ULUNA]['cosmos_name'];
     const uri: string        = 'https://rest.cosmos.directory/' + chain_name + '/ibc/apps/transfer/v1/denom_traces/' + value;
 
-    const denom_name = await new RequestService(this.http).getRequest(uri).then((name) => {
+    //const denom_name = await new RequestService(this.http).getRequest(uri).then((name) => {
+    const denom_name = await this.request_service.getRequest(uri).then((name) => {
       return name;
     });
 
@@ -126,7 +132,7 @@ export class WalletService {
    */
   public deleteWalletByID(id: number): boolean {
 
-    let new_list: Wallet[] = [];
+    let new_list: LocalWallet[] = [];
 
     if (this.wallet_list.length == 0){
       this.getAllWallets();
@@ -195,9 +201,9 @@ export class WalletService {
    * 
    * @returns array
    */
-  public getAllWallets(): Wallet[] {
+  public getAllWallets(): LocalWallet[] {
 
-    const local_storage  = new LocalstorageService();
+    const local_storage  = new LocalStorage();
 
     if (local_storage.getData('wallets')){
       let decrypted_string: string = this.decrypt(local_storage.getData('wallets')!);
@@ -284,10 +290,10 @@ export class WalletService {
    * 
    * @returns number
    */
-  private getNextWalletID(): number {
+  protected getNextWalletID(): number {
 
     let wallet_id: number        = 1
-    let current_wallets:Wallet[] = this.getAllWallets();
+    let current_wallets:LocalWallet[] = this.getAllWallets();
     
     if (current_wallets.length > 0){
       wallet_id = current_wallets[current_wallets.length - 1].id + 1;
@@ -302,7 +308,7 @@ export class WalletService {
    * @param id 
    * @returns Wallet or undefined if target does not exist
    */
-  public getWalletById(id: number): Wallet | undefined {
+  public getWalletById(id: number): LocalWallet | undefined {
 
     if (this.wallet_list.length == 0){
       this.getAllWallets();
@@ -329,7 +335,8 @@ export class WalletService {
     return true;
   }
 
-  constructor(private http: HttpClient) {
+  //constructor(private http: HttpClient) {
+  constructor() {
 
     var config = {
       'columbus-5': {
