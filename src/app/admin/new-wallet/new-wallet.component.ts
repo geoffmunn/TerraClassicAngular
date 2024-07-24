@@ -1,9 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { WalletService } from '../../services/wallet.service';
+import { LocalStorageWallet } from '../../services/wallet.service';
 import { CommonModule } from '@angular/common';
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
 @Component({
   selector: 'app-new-wallet',
   standalone: true,
@@ -14,7 +12,7 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 export class NewWalletComponent {
   
-  public wallet_service:WalletService = inject(WalletService);
+  public wallet_service:LocalStorageWallet = inject(LocalStorageWallet);
 
   public new_wallet_form:FormGroup = new FormGroup({
     wallet_name: new FormControl(''),

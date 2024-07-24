@@ -1,9 +1,8 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-//import { WalletItemComponent } from '../../wallet-item/wallet-item.component';
 import { CommonModule } from '@angular/common';
-import { WalletService } from '../../services/wallet.service';
+import { LocalStorageWallet } from '../../services/wallet.service';
 import { BalancesService } from '../../services/balances.service';
-import { WalletCoin } from '../../interfaces/walletcoin';
+import { WalletCoin } from '../../interfaces/walletCoin';
 
 import _ from 'lodash';
 import { RouterModule } from '@angular/router';
@@ -18,10 +17,11 @@ import { RouterModule } from '@angular/router';
 
 export class WalletListComponent {
 
-  public wallet_service: WalletService = inject(WalletService);
   
   public all_coins: { [key: string]: WalletCoin }   = {}
   private _all_coins: { [key: string]: WalletCoin } = {}
+
+  public wallet_service: LocalStorageWallet = inject(LocalStorageWallet);
 
   public wallet_balances: { [key: string]: any }   = {}
   private _wallet_balances: { [key: string]: any } = {}
