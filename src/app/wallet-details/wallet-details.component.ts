@@ -1,8 +1,8 @@
 import {Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ActivatedRoute, NavigationEnd, Router, RouterModule} from '@angular/router';
-import { WalletService } from '../services/wallet.service';
-import { Wallet } from '../interfaces/wallet';
+import { LocalStorageWallet } from '../services/wallet.service';
+import { LocalWallet } from '../interfaces/localWallet';
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import { PersistablesService } from '../services/persistables.service';
 import { ModalWalletPassword } from '../admin/wallet-password/wallet-password.component';
@@ -20,12 +20,12 @@ import { BasicConfirmComponent } from '../modals/basic-confirm/basic-confirm.com
 export class WalletDetailsComponent {
 
   private route: ActivatedRoute             = inject(ActivatedRoute);
-  private wallet_service: WalletService     = inject(WalletService);
+  private wallet_service: LocalStorageWallet     = inject(LocalStorageWallet);
   private persistables: PersistablesService = inject(PersistablesService);
   private modal_service: NgbModal           = inject(NgbModal);
   
-  public wallet_list: Wallet[] = [];
-  public wallet_item: Wallet | undefined;
+  public wallet_list: LocalWallet[] = [];
+  public wallet_item: LocalWallet | undefined;
 
   public new_wallet_form: FormGroup = new FormGroup({
     wallet_name: new FormControl(''),
