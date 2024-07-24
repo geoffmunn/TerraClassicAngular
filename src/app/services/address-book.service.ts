@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Address } from '../interfaces/address';
-import { LocalstorageService } from './localstorage.service';
-import { WalletService } from './wallet.service';
+import { LocalStorage } from '../classes/local-storage';
+import { LocalStorageWallet } from './wallet.service';
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class AddressBookService extends WalletService {
+export class AddressBookService extends LocalStorageWallet {
 
   public address_list: Address[] = [];
 
@@ -46,7 +46,7 @@ export class AddressBookService extends WalletService {
    */
   public getAllAddresses(): Address[] {
 
-    const local_storage  = new LocalstorageService();
+    const local_storage = new LocalStorage();
 
     if (local_storage.getData('addresses')){
       let decrypted_string: string = this.decrypt(local_storage.getData('addresses')!);
