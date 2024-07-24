@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { WalletCoin } from '../interfaces/walletcoin';
+import { WalletCoin } from '../interfaces/walletCoin';
 
 @Injectable({
   providedIn: 'root'
