@@ -8,6 +8,7 @@ import { PersistablesService } from '../services/persistables.service';
 import { ModalWalletPassword } from '../admin/wallet-password/wallet-password.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BasicConfirmComponent } from '../modals/basic-confirm/basic-confirm.component';
+import { UserWallet } from '../classes/user-wallet';
 
 @Component({
   selector: 'app-wallet-details',
@@ -124,6 +125,8 @@ export class WalletDetailsComponent {
    * @param $event
    */
   generateAddress($event: Event){
-    this.new_wallet_form.get('wallet_address')?.setValue(this.wallet_service.createAddressFromSeed(($event.target as HTMLInputElement).value));
+    const user_wallet: UserWallet = new UserWallet();
+    
+    this.new_wallet_form.get('wallet_address')?.setValue(user_wallet.createAddressFromSeed(($event.target as HTMLInputElement).value));
   }
 }

@@ -20,42 +20,42 @@ export class LocalStorageWallet {
   //protected local_storage: LocalstorageService = new LocalstorageService();
   protected local_storage: LocalStorage = new LocalStorage();
   private request_service: RequestService = inject(RequestService);
-  private terra: LCDClient;
+  //private terra: LCDClient;
   
-  public balances: BalancesService = new BalancesService();
+  //public balances: BalancesService = new BalancesService();
   public key: string               = '';
   public wallet_list: LocalWallet[]     = [];
   
-  /**
-   * Based on the provided seed phrase, generate a valid address.
-   * The seed needs to be passed as an attribute because it might be user-provided (the 'new wallet' function)
-   * 
-   * @param seed 
-   * 
-   * @returns string
-   */
-  public createAddressFromSeed(seed: string){
+  // /**
+  //  * Based on the provided seed phrase, generate a valid address.
+  //  * The seed needs to be passed as an attribute because it might be user-provided (the 'new wallet' function)
+  //  * 
+  //  * @param seed 
+  //  * 
+  //  * @returns string
+  //  */
+  // public createAddressFromSeed(seed: string){
 
-    let address: string = ''
+  //   let address: string = ''
 
-    if (seed == ''){
-      return ''
-    };
+  //   if (seed == ''){
+  //     return ''
+  //   };
 
-    try {
-      const mnemonic = new MnemonicKey({
-        mnemonic: seed
-      });
+  //   try {
+  //     const mnemonic = new MnemonicKey({
+  //       mnemonic: seed
+  //     });
     
-      let wallet = this.terra.wallet(mnemonic);
+  //     let wallet = this.terra.wallet(mnemonic);
 
-      address = wallet.key.accAddress('terra')
-    } catch(e) {
-      address = '';
-    };
+  //     address = wallet.key.accAddress('terra')
+  //   } catch(e) {
+  //     address = '';
+  //   };
 
-    return address;
-  }
+  //   return address;
+  // }
 
   /**
    * Do a lookup on the IBC value to figure out what the actual readable denom is
@@ -219,70 +219,70 @@ export class LocalStorageWallet {
     return this.wallet_list;
   }
 
-  /**
-   * Get all the balances for this address, including contract addresses
-   * 
-   * @param address 
-   * @returns BalancesService
-   */
-  async getBalances(address: string): Promise<BalancesService> {
+  // /**
+  //  * Get all the balances for this address, including contract addresses
+  //  * 
+  //  * @param address 
+  //  * @returns BalancesService
+  //  */
+  // async getBalances(address: string): Promise<BalancesService> {
 
-    // LCD understand automatically the chain to query using the bech32 prefix of the address
-    //const pagOpt:PaginationOptions = Pagination(limit=50, count_total=True)
-    const balance:Promise<[Coins, Pagination]> = this.terra.bank.balance(address);
+  //   // LCD understand automatically the chain to query using the bech32 prefix of the address
+  //   //const pagOpt:PaginationOptions = Pagination(limit=50, count_total=True)
+  //   const balance:Promise<[Coins, Pagination]> = this.terra.bank.balance(address);
 
-    await balance.then(async (name) => { 
-      const coins:Coins = name[0];
-      const coin_list   = coins.toData();
+  //   await balance.then(async (name) => { 
+  //     const coins:Coins = name[0];
+  //     const coin_list   = coins.toData();
 
-      for (var i = 0; i < coin_list.length; i++){
-        var denom_result: string = await this.denomTrace(coin_list[i].denom).then ((name) => {
-          return name;
-        });
+  //     for (var i = 0; i < coin_list.length; i++){
+  //       var denom_result: string = await this.denomTrace(coin_list[i].denom).then ((name) => {
+  //         return name;
+  //       });
 
-        if (denom_result != undefined){
-          let key              = Object.keys(COIN_CODES).find(key => COIN_CODES[key] === denom_result);
-          let formatted_amount = this.formatAmountToReadable(Number(coin_list[i].amount), denom_result);
+  //       if (denom_result != undefined){
+  //         let key              = Object.keys(COIN_CODES).find(key => COIN_CODES[key] === denom_result);
+  //         let formatted_amount = this.formatAmountToReadable(Number(coin_list[i].amount), denom_result);
 
-          if (key !== undefined){
-            var coin: WalletCoin = {
-              amount: Number(coin_list[i].amount),
-              denom: denom_result,
-              formatted: formatted_amount,
-              readable: FULL_COIN_LOOKUP[key],
-              wallet_id: 0
-            };
+  //         if (key !== undefined){
+  //           var coin: WalletCoin = {
+  //             amount: Number(coin_list[i].amount),
+  //             denom: denom_result,
+  //             formatted: formatted_amount,
+  //             readable: FULL_COIN_LOOKUP[key],
+  //             wallet_id: 0
+  //           };
 
-            this.balances.balances.set(denom_result, coin);
-          }
-        }
-      }
-    });
+  //           this.balances.balances.set(denom_result, coin);
+  //         }
+  //       }
+  //     }
+  //   });
 
-    // Get all the meme coins etc
-    const keys = Object.keys(NON_ULUNA_COINS);
-    for (var i = 0; i < keys.length; i++){
-      if (COIN_ALIASES[NON_ULUNA_COINS[keys[i]]] !== undefined){
-        let non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery(NON_ULUNA_COINS[keys[i]], {'balance':{'address':address}})  
+  //   // Get all the meme coins etc
+  //   const keys = Object.keys(NON_ULUNA_COINS);
+  //   for (var i = 0; i < keys.length; i++){
+  //     if (COIN_ALIASES[NON_ULUNA_COINS[keys[i]]] !== undefined){
+  //       let non_uluna_balance:Promise<[Coins, Pagination]> = this.terra.wasm.contractQuery(NON_ULUNA_COINS[keys[i]], {'balance':{'address':address}})  
 
-        await non_uluna_balance.then((item: any) => {
-          let formatted_amount = this.formatAmountToReadable(Number(item.balance), COIN_ALIASES[NON_ULUNA_COINS[keys[i]]])
+  //       await non_uluna_balance.then((item: any) => {
+  //         let formatted_amount = this.formatAmountToReadable(Number(item.balance), COIN_ALIASES[NON_ULUNA_COINS[keys[i]]])
           
-          var coin: WalletCoin = {
-            amount: Number(item.balance),
-            denom: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]],
-            formatted: formatted_amount,
-            readable: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]],
-            wallet_id: 0
-          };
+  //         var coin: WalletCoin = {
+  //           amount: Number(item.balance),
+  //           denom: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]],
+  //           formatted: formatted_amount,
+  //           readable: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]],
+  //           wallet_id: 0
+  //         };
 
-          this.balances.balances.set(COIN_ALIASES[NON_ULUNA_COINS[keys[i]]], coin);
-        });
-      }
-    }
+  //         this.balances.balances.set(COIN_ALIASES[NON_ULUNA_COINS[keys[i]]], coin);
+  //       });
+  //     }
+  //   }
 
-    return this.balances;
-  }
+  //   return this.balances;
+  // }
 
   /**
    * Figure out the next ID number based on existing wallets.
@@ -338,16 +338,16 @@ export class LocalStorageWallet {
   //constructor(private http: HttpClient) {
   constructor() {
 
-    var config = {
-      'columbus-5': {
-        lcd: 'https://terra-classic-fcd.publicnode.com',
-        chainID: 'columbus-5',
-        gasAdjustment: 1.75,
-        gasPrices: { uluna: 0.015 },
-        prefix: 'terra', // bech32 prefix, used by the LCD to understand which is the right chain to query
-      },
-    };
+    // var config = {
+    //   'columbus-5': {
+    //     lcd: 'https://terra-classic-fcd.publicnode.com',
+    //     chainID: 'columbus-5',
+    //     gasAdjustment: 1.75,
+    //     gasPrices: { uluna: 0.015 },
+    //     prefix: 'terra', // bech32 prefix, used by the LCD to understand which is the right chain to query
+    //   },
+    // };
     
-    this.terra = new LCDClient(config);
+    // this.terra = new LCDClient(config);
   }
 }

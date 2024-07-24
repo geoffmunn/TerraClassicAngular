@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { LocalStorageWallet } from '../../services/wallet.service';
 import { CommonModule } from '@angular/common';
+import { UserWallet } from '../../classes/user-wallet';
 @Component({
   selector: 'app-new-wallet',
   standalone: true,
@@ -39,6 +40,8 @@ export class NewWalletComponent {
    * @param $event
    */
   generateAddress($event: Event){
-    this.new_wallet_form.get('wallet_address')?.setValue(this.wallet_service.createAddressFromSeed(($event.target as HTMLInputElement).value));
+    const user_wallet:UserWallet = new UserWallet()
+
+    this.new_wallet_form.get('wallet_address')?.setValue(user_wallet.createAddressFromSeed(($event.target as HTMLInputElement).value));
   }
 }
