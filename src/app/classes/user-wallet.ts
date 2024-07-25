@@ -1,7 +1,4 @@
-import { inject, Injectable } from '@angular/core';
 import { LocalWallet } from '../interfaces/localWallet';
-//import { LocalstorageService } from './localstorage.service';
-import CryptoJS from 'crypto-js';
 import { LCDClient, Coins, MnemonicKey } from '@geoffmunn/feather.js';
 import { Pagination, PaginationOptions } from '@geoffmunn/feather.js/dist/client/lcd/APIRequester';
 import { WalletCoin } from '../interfaces/walletCoin';
@@ -9,12 +6,11 @@ import { RequestService } from '../services/request.service';
 import { CHAIN_DATA, COIN_CODES, FULL_COIN_LOOKUP, NON_ULUNA_COINS, COIN_ALIASES } from '../constants'
 import { BalancesService } from '../services/balances.service';
 import { LocalStorage } from '../classes/local-storage';
-//import { HttpClient } from '@angular/common/http';
 
 export class UserWallet {
 
   protected local_storage: LocalStorage   = new LocalStorage();
-  private request_service: RequestService = inject(RequestService);
+  private request_service: RequestService | undefined
   private terra: LCDClient;
   
   public balances: BalancesService  = new BalancesService();
@@ -81,69 +77,16 @@ export class UserWallet {
     const chain_name: string = CHAIN_DATA[COIN_CODES.ULUNA]['cosmos_name'];
     const uri: string        = 'https://rest.cosmos.directory/' + chain_name + '/ibc/apps/transfer/v1/denom_traces/' + value;
 
-    //const denom_name = await new RequestService(this.http).getRequest(uri).then((name) => {
-    const denom_name = await this.request_service.getRequest(uri).then((name: any) => {
-      return name;
-    });
+    if (this.request_service != undefined){
+      const denom_name = await this.request_service!.getRequest(uri).then((name: any) => {
+        return name;
+      });
 
-    return denom_name;
+      return denom_name;
+    } else {
+      return ibc_address;
+    }
   }
-
-  // /**
-  //  * Encrypts the provided string based on the stored this.key value
-  //  * 
-  //  * @param encrypted_item 
-  //  * @returns string
-  //  */
-  // public encrypt(text_item: string): string {
-
-  //   if (this.key != ''){
-  //     return CryptoJS.AES.encrypt(text_item, this.key).toString();
-  //   } else {
-  //     return '';
-  //   }
-  // }
-
-  // /**
-  //  * Decrypts the provided string based on the stored this.key value
-  //  * 
-  //  * @param encrypted_item 
-  //  * @returns string
-  //  */
-  // public decrypt(encrypted_item: string) {
-
-  //   if (this.key != ''){
-  //     return CryptoJS.AES.decrypt(encrypted_item, this.key).toString(CryptoJS.enc.Utf8);
-  //   } else {
-  //     return '';
-  //   };
-  // }
-
-  // /**
-  //  * Go through all the wallets and rebuild the list minus the id of the wallet we don't want.
-  //  * 
-  //  * @param id 
-  //  * @returns boolean
-  //  */
-  // public deleteWalletByID(id: number): boolean {
-
-  //   let new_list: LocalWallet[] = [];
-
-  //   if (this.wallet_list.length == 0){
-  //     this.getAllWallets();
-  //   };
-
-  //   this.wallet_list.forEach(function(wallet){
-  //     if (wallet.id != id){
-  //       new_list.push(wallet);
-  //     };
-  //   });
-    
-  //   this.wallet_list = new_list;
-  //   this.local_storage.saveData('wallets', this.encrypt(JSON.stringify(this.wallet_list)));
-
-  //   return true;
-  // }
 
   /**
    * Based on the denomination, which will indicate the precision, turn this base uluna amount
@@ -279,58 +222,7 @@ export class UserWallet {
     return this.balances;
   }
 
-  // /**
-  //  * Figure out the next ID number based on existing wallets.
-  //  * This is not a contiguous list - it just looks at the last id
-  //  * 
-  //  * @returns number
-  //  */
-  // protected getNextWalletID(): number {
-
-  //   let wallet_id: number        = 1
-  //   let current_wallets:LocalWallet[] = this.getAllWallets();
-    
-  //   if (current_wallets.length > 0){
-  //     wallet_id = current_wallets[current_wallets.length - 1].id + 1;
-  //   }
-
-  //   return wallet_id;
-  // }
-
-  // /**
-  //  * Based on the provided ID, return the wallet that matches
-  //  * 
-  //  * @param id 
-  //  * @returns Wallet or undefined if target does not exist
-  //  */
-  // public getWalletById(id: number): LocalWallet | undefined {
-
-  //   if (this.wallet_list.length == 0){
-  //     this.getAllWallets();
-  //   }
-  //   return this.wallet_list.find((wallet) => wallet.id === id);
-  // }
-
-  // /**
-  //  * Add a new wallet to the list, and update the local storage object.
-  //  * 
-  //  * @param wallet_name 
-  //  * @param wallet_address 
-  //  * @param wallet_seed 
-  //  * 
-  //  * @return true
-  //  */
-  // public new_wallet(wallet_name: string, wallet_address: string, wallet_seed: string): boolean {
-    
-  //   const wallet_id: number = this.getNextWalletID();
-
-  //   this.wallet_list.push({'id': wallet_id, 'name': wallet_name, 'address': wallet_address, 'seed': wallet_seed});
-  //   this.local_storage.saveData('wallets', this.encrypt(JSON.stringify(this.wallet_list)));
-
-  //   return true;
-  // }
-
-  constructor() {
+  constructor(private rs:RequestService|undefined = undefined) {
 
     var config = {
       'columbus-5': {
@@ -343,5 +235,7 @@ export class UserWallet {
     };
     
     this.terra = new LCDClient(config);
+
+    this.request_service = rs
   }
 }
