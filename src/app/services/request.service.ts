@@ -27,6 +27,4 @@ export class RequestService {
     
     return result;
   }
-
 }
-
