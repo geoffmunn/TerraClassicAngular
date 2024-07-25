@@ -1,8 +1,6 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { LocalWallet } from '../interfaces/localWallet';
 import CryptoJS from 'crypto-js';
-import { RequestService } from './request.service';
-import { CHAIN_DATA, COIN_CODES, FULL_COIN_LOOKUP, NON_ULUNA_COINS, COIN_ALIASES } from '../constants'
 import { LocalStorage } from '../classes/local-storage';
 
 @Injectable({
@@ -11,8 +9,7 @@ import { LocalStorage } from '../classes/local-storage';
 
 export class LocalStorageWallet {
 
-  protected local_storage: LocalStorage   = new LocalStorage();
-  private request_service: RequestService = inject(RequestService);
+  protected local_storage: LocalStorage = new LocalStorage();
 
   public key: string                = '';
   public wallet_list: LocalWallet[] = [];
@@ -106,7 +103,7 @@ export class LocalStorageWallet {
    */
   protected getNextWalletID(): number {
 
-    let wallet_id: number        = 1
+    let wallet_id: number             = 1
     let current_wallets:LocalWallet[] = this.getAllWallets();
     
     if (current_wallets.length > 0){

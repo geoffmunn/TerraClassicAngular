@@ -1,6 +1,6 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LocalStorageWallet } from '../../services/wallet.service';
+import { LocalStorageWallet } from '../../services/localStorageWallet.service';
 import { BalancesService } from '../../services/balances.service';
 import { WalletCoin } from '../../interfaces/walletCoin';
 

@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { LocalStorageWallet } from '../../services/wallet.service';
+import { LocalStorageWallet } from '../../services/localStorageWallet.service';
 import { CommonModule } from '@angular/common';
 import { UserWallet } from '../../classes/user-wallet';
 @Component({

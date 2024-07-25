@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Address } from '../interfaces/address';
 import { LocalStorage } from '../classes/local-storage';
-import { LocalStorageWallet } from './wallet.service';
+import { LocalStorageWallet } from './localStorageWallet.service';
 
 @Injectable({
   providedIn: 'root'

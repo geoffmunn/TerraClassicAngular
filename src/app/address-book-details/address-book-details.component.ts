@@ -5,7 +5,7 @@ import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import { PersistablesService } from '../services/persistables.service';
 import { ModalWalletPassword } from '../admin/wallet-password/wallet-password.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AddressBookService } from '../services/address-book.service';
+import { AddressBookService } from '../services/addressBook.service';
 import { Address } from '../interfaces/address';
 import { BasicConfirmComponent } from '../modals/basic-confirm/basic-confirm.component';
 

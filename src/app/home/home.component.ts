@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { LocalStorageWallet } from '../services/wallet.service';
+import { LocalStorageWallet } from '../services/localStorageWallet.service';
 import { WalletListComponent } from '../admin/wallet-list/wallet-list.component';
 import { ModalWalletPassword } from '../admin/wallet-password/wallet-password.component';
 import { RouterLink } from '@angular/router';
@@ -9,7 +9,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PersistablesService } from '../services/persistables.service';
 import { Address } from '../interfaces/address';
 import { AddressType } from '../interfaces/addressType';
-import { AddressBookService } from '../services/address-book.service';
+import { AddressBookService } from '../services/addressBook.service';
 @Component({
   selector: 'app-home',
   standalone: true,

@@ -1,7 +1,7 @@
 import {Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ActivatedRoute, NavigationEnd, Router, RouterModule} from '@angular/router';
-import { LocalStorageWallet } from '../services/wallet.service';
+import { LocalStorageWallet } from '../services/localStorageWallet.service';
 import { LocalWallet } from '../interfaces/localWallet';
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import { PersistablesService } from '../services/persistables.service';
@@ -126,7 +126,7 @@ export class WalletDetailsComponent {
    */
   generateAddress($event: Event){
     const user_wallet: UserWallet = new UserWallet();
-    
+
     this.new_wallet_form.get('wallet_address')?.setValue(user_wallet.createAddressFromSeed(($event.target as HTMLInputElement).value));
   }
 }
