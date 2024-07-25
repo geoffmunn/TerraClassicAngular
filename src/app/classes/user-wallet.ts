@@ -116,6 +116,7 @@ export class UserWallet {
    * 
    * @param readable_amount
    * @param denom 
+   * 
    * @returns number
    */
   public formatAmountToBase(readable_amount: number, denom: string): number{
@@ -131,31 +132,6 @@ export class UserWallet {
 
     return result;
   }
-
-  // /**
-  //  * Get all the wallets in the local storage object.
-  //  * This will also update the wallet_list object.
-  //  * If none exist, return an empty array
-  //  * 
-  //  * @returns array
-  //  */
-  // public getAllWallets(): LocalWallet[] {
-
-  //   const local_storage  = new LocalStorage();
-
-  //   if (local_storage.getData('wallets')){
-  //     let decrypted_string: string = this.decrypt(local_storage.getData('wallets')!);
-  //     if (decrypted_string != ''){
-  //       let local_wallets:any = JSON.parse(decrypted_string);
-          
-  //       if (local_wallets){
-  //         this.wallet_list = local_wallets;
-  //       }
-  //     }
-  //   }
-    
-  //   return this.wallet_list;
-  // }
 
   /**
    * Get all the balances for this address, including contract addresses
