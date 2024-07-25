@@ -6,6 +6,8 @@ import { WalletCoin } from '../../interfaces/walletCoin';
 
 import _ from 'lodash';
 import { RouterModule } from '@angular/router';
+import { UserWallet } from '../../classes/user-wallet';
+import { RequestService } from '../../services/request.service';
 
 @Component({
   selector: 'app-wallet-list',
@@ -25,6 +27,8 @@ export class WalletListComponent {
 
   public wallet_balances: { [key: string]: any }   = {}
   private _wallet_balances: { [key: string]: any } = {}
+
+  public request_service:RequestService = inject (RequestService);
 
   @Input() 
     public set password(val: any) {
@@ -50,10 +54,12 @@ export class WalletListComponent {
 
   private async get_wallet_balances(){
     
+    const user_wallet:UserWallet = new UserWallet(this.request_service);
+
     // Get the raw balances for each wallet and attach it to the object
     for (var i = 0; i < this.wallet_service.wallet_list.length; i++){
       if (i in this.wallet_service.wallet_list){
-        var balances:BalancesService = await this.wallet_service.getBalances(this.wallet_service.wallet_list[i].address);
+        var balances: BalancesService = await user_wallet.getBalances(this.wallet_service.wallet_list[i].address);
 
         balances.balances.forEach((item:WalletCoin) => {
           this._all_coins[item.denom] = item;
