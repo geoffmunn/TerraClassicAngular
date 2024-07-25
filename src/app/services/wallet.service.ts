@@ -1,15 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { LocalWallet } from '../interfaces/localWallet';
-//import { LocalstorageService } from './localstorage.service';
 import CryptoJS from 'crypto-js';
-import { LCDClient, Coins, MnemonicKey } from '@geoffmunn/feather.js';
-import { Pagination, PaginationOptions } from '@geoffmunn/feather.js/dist/client/lcd/APIRequester';
-import { WalletCoin } from '../interfaces/walletCoin';
 import { RequestService } from './request.service';
 import { CHAIN_DATA, COIN_CODES, FULL_COIN_LOOKUP, NON_ULUNA_COINS, COIN_ALIASES } from '../constants'
-import { BalancesService } from './balances.service';
 import { LocalStorage } from '../classes/local-storage';
-//import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -17,45 +11,11 @@ import { LocalStorage } from '../classes/local-storage';
 
 export class LocalStorageWallet {
 
-  //protected local_storage: LocalstorageService = new LocalstorageService();
-  protected local_storage: LocalStorage = new LocalStorage();
+  protected local_storage: LocalStorage   = new LocalStorage();
   private request_service: RequestService = inject(RequestService);
-  //private terra: LCDClient;
-  
-  //public balances: BalancesService = new BalancesService();
-  public key: string               = '';
-  public wallet_list: LocalWallet[]     = [];
-  
-  // /**
-  //  * Based on the provided seed phrase, generate a valid address.
-  //  * The seed needs to be passed as an attribute because it might be user-provided (the 'new wallet' function)
-  //  * 
-  //  * @param seed 
-  //  * 
-  //  * @returns string
-  //  */
-  // public createAddressFromSeed(seed: string){
 
-  //   let address: string = ''
-
-  //   if (seed == ''){
-  //     return ''
-  //   };
-
-  //   try {
-  //     const mnemonic = new MnemonicKey({
-  //       mnemonic: seed
-  //     });
-    
-  //     let wallet = this.terra.wallet(mnemonic);
-
-  //     address = wallet.key.accAddress('terra')
-  //   } catch(e) {
-  //     address = '';
-  //   };
-
-  //   return address;
-  // }
+  public key: string                = '';
+  public wallet_list: LocalWallet[] = [];
 
   /**
    * Do a lookup on the IBC value to figure out what the actual readable denom is
