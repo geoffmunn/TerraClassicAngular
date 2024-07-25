@@ -1,24 +1,41 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Injector, Input } from '@angular/core';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { WalletService } from '../../services/wallet.service';
-import { WalletCoin } from '../../interfaces/walletcoin';
+import { LocalStorageWallet } from '../../services/localStorageWallet.service';
+import { WalletCoin } from '../../interfaces/walletCoin';
 import { TransactionItem } from '../../interfaces/transactionItem';
 import { NgbActiveModal, NgbModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmSendComponent } from '../../modals/confirm-send/confirm-send.component';
+import { Address } from '../../interfaces/address';
+import { AddressType } from '../../interfaces/addressType';
+import { AddressBookService } from '../../services/addressBook.service';
+import { sendTransaction } from '../../services/sendTransaction';
+//import { WalletItem } from '../../services/walletItem.service';
+import { UserWallet } from '../../classes/user-wallet';
+import { RequestService } from '../../services/request.service';
+import { Wallet } from '../../interfaces/wallet';
+//import { HttpClient, HttpHandler } from '@angular/common/http';
+//import { RequestService } from '../../services/request.service';
+
 @Component({
   selector: 'app-send',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, NgbDropdownModule],
   templateUrl: './send.component.html',
-  styleUrl: './send.component.css'
+  styleUrl: './send.component.css',
+  //providers: [RequestService]
+  // providers: [
+  //   WalletItem,
+  //   { provide: WalletItem, useClass: WalletItem, multi: true } ]
 })
 
 export class SendComponent {
-
-  private wallet_service: WalletService = inject(WalletService);
-  private modal_service:NgbModal        = inject(NgbModal);
-
+  
+  private local_wallet_service: LocalStorageWallet            = inject(LocalStorageWallet);
+  private address_book_service: AddressBookService = inject(AddressBookService);
+  private modal_service:NgbModal                   = inject(NgbModal);
+  //private wallet_item_service: WalletItem = inject(WalletItem);
+  private user_wallet: UserWallet = new UserWallet()
   private coin: WalletCoin = {} as WalletCoin;
 
   // The preset percentage options we can send
@@ -34,7 +51,7 @@ export class SendComponent {
   @Input() 
     public set selected_wallet_coin(val: WalletCoin) {
       if ('denom' in val){
-        const selected_wallet:any = this.wallet_service.getWalletById(val.wallet_id)
+        const selected_wallet:any = this.local_wallet_service.getWalletById(val.wallet_id)
         if (selected_wallet !== undefined){
           this.coin = val;
 
@@ -49,7 +66,7 @@ export class SendComponent {
     }
 
   // This is received from the parent component, but is also found in the persistables service
-  @Input() address_list:string[] = []
+  @Input() address_list:Address[] = []
     
   // The send transaction form object
   public send_transaction_form:FormGroup = new FormGroup({
@@ -59,13 +76,19 @@ export class SendComponent {
   });
 
   /**
-   * When someone clicks on a dropdown address, update the button text
+   * When someone clicks on a dropdown address, update the button text with the name of the wallet/address
    * 
    * @param $event
    */
   selectAddress($event:MouseEvent){
-    var target:any        = $event.target;
-    this.selected_address = target.innerHTML;
+    var target:HTMLButtonElement  = $event.target as HTMLButtonElement
+    let address_type: AddressType = target.getAttribute('data-address-type') as any;
+
+    if (address_type == AddressType.WALLET){
+      this.selected_address = String(this.local_wallet_service.getWalletById(Number(target.getAttribute('data-address-id')))?.address)
+    } else {
+      this.selected_address = String(this.address_book_service.getAddressById(Number(target.getAttribute('data-address-id')))?.address)
+    }
   }
 
   /**
@@ -86,7 +109,7 @@ export class SendComponent {
     let send_amount: number           = 0;
     let send_amount_formatted: number = 0;
     let result: TransactionItem       = {} as TransactionItem
-    
+
     // This could be a percentage value, or a number, or comma'd
     if (user_amount[user_amount.length - 1] == '%'){
       // This is a percentage, so calculate the correct amount:
@@ -96,7 +119,7 @@ export class SendComponent {
       send_amount_formatted = this.coin.formatted * percentage
     } else {
       // Not a percentage, but we need to remove commas
-      send_amount           = this.wallet_service.formatAmountToBase(Number(user_amount.replaceAll(',', '')), this.coin.denom)
+      send_amount           = this.user_wallet.formatAmountToBase(Number(user_amount.replaceAll(',', '')), this.coin.denom)
       send_amount_formatted = Number(user_amount.replaceAll(',', ''))
     }
 
@@ -127,6 +150,43 @@ export class SendComponent {
 
       confirm_send.result.then(() => {
         console.log('When user closes'); 
+
+        console.log (this.coin)
+        // We now have a wallet in the coin object
+        // Create a Wallet object and pass this to the sendTransaction service
+
+        let local_wallet = this.local_wallet_service.getWalletById(this.coin.wallet_id);
+
+        console.log ('local wallet:', local_wallet)
+        
+        if (local_wallet != undefined){
+
+          
+          // var send_wallet:Wallet = {
+          //   name: local_wallet.name,
+          //   address: this.local_wallet_service.createAddressFromSeed(local_wallet.seed),
+          //   seed: local_wallet.seed
+          // }
+
+          // let wallet_item:WalletItem = inject(WalletItem);
+          
+          // wallet_item.create(local_wallet?.seed)
+
+          // console.log ('sending from:', wallet_item.address)
+
+          // var injector = Injector.create([
+          //   { provide: WalletItem, multi: true, deps: []}
+          // ]);
+
+          // var test = injector.get(WalletItem)
+          // console.log(test)
+
+          // var wallet1:WalletItem = new this.wallet_item_service()
+          // wallet1.create(local_wallet.seed)
+          // console.log ('wallet 1:', wallet1.address)
+        }
+        //let send_tx = new sendTransaction()
+        //send_tx.create()
       }, 
       () => { 
         // Do nothing, it was cancelled
