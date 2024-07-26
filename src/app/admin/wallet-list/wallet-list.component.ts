@@ -54,7 +54,8 @@ export class WalletListComponent {
 
   private async get_wallet_balances(){
     
-    const user_wallet:UserWallet = new UserWallet(this.request_service);
+    const user_wallet:UserWallet  = new UserWallet(this.request_service);
+    user_wallet.denom_service.key = this.wallet_service.key;
 
     // Get the raw balances for each wallet and attach it to the object
     for (var i = 0; i < this.wallet_service.wallet_list.length; i++){
