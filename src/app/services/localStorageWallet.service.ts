@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { LocalWallet } from '../interfaces/localWallet';
 import CryptoJS from 'crypto-js';
 import { LocalStorage } from '../classes/local-storage';
+import { IBCAddress } from '../interfaces/ibcAddress';
 
 @Injectable({
   providedIn: 'root'
@@ -15,9 +16,30 @@ export class LocalStorageWallet {
   public wallet_list: LocalWallet[] = [];
 
   /**
+   * Add a new ibc/denom pair to the lookup table
+   * 
+   * @param ibc_name 
+   * @param denom 
+   * 
+   * @returns boolean
+   */
+  public addDenom(ibc_name: string, denom: string): boolean {
+
+    let denom_list: any = this.getAllDenoms();
+
+    if (this.getDenomByIBC(ibc_name) == undefined){
+      denom_list.push({'ibc_name': ibc_name, 'denom': denom});
+      this.local_storage.saveData('denoms', this.encrypt(JSON.stringify(denom_list)));
+    }
+
+    return true;
+  }
+
+  /**
    * Encrypts the provided string based on the stored this.key value
    * 
    * @param encrypted_item 
+   * 
    * @returns string
    */
   public encrypt(text_item: string): string {
@@ -33,6 +55,7 @@ export class LocalStorageWallet {
    * Decrypts the provided string based on the stored this.key value
    * 
    * @param encrypted_item 
+   * 
    * @returns string
    */
   public decrypt(encrypted_item: string) {
@@ -48,6 +71,7 @@ export class LocalStorageWallet {
    * Go through all the wallets and rebuild the list minus the id of the wallet we don't want.
    * 
    * @param id 
+   * 
    * @returns boolean
    */
   public deleteWalletByID(id: number): boolean {
@@ -79,10 +103,8 @@ export class LocalStorageWallet {
    */
   public getAllWallets(): LocalWallet[] {
 
-    const local_storage  = new LocalStorage();
-
-    if (local_storage.getData('wallets')){
-      let decrypted_string: string = this.decrypt(local_storage.getData('wallets')!);
+    if (this.local_storage.getData('wallets')){
+      let decrypted_string: string = this.decrypt(this.local_storage.getData('wallets')!);
       if (decrypted_string != ''){
         let local_wallets:any = JSON.parse(decrypted_string);
           
@@ -93,6 +115,47 @@ export class LocalStorageWallet {
     }
     
     return this.wallet_list;
+  }
+
+  /**
+   * Get all the ibc/denom pairs in the local storage object.
+   * If none exist, return an empty array.
+   * 
+   * @returns IBCAddress[]
+   */
+  public getAllDenoms(): IBCAddress[] {
+
+    let result: IBCAddress[] = [];
+
+    if (this.local_storage.getData('denoms')){
+      let decrypted_string: string = this.decrypt(this.local_storage.getData('denoms')!);
+      if (decrypted_string != ''){
+        let local_denoms: any = JSON.parse(decrypted_string);
+        if (local_denoms){
+          result = local_denoms;
+        }
+      }
+    } 
+
+    return result;
+  }
+
+  /**
+   * Get a sepcific denom value based on the provided IBC value.
+   * 
+   * @param ibc_name 
+   * 
+   * @returns IBCAddress or undefined
+   */
+  public getDenomByIBC(ibc_name: string): IBCAddress | undefined {
+
+    var denom_list = this.getAllDenoms();
+    
+    console.log ('looking for:', ibc_name)
+    console.log (denom_list);
+    console.log ('result:', denom_list.find((denom) => denom.ibc_name === ibc_name))
+
+    return denom_list.find((denom) => denom.ibc_name === ibc_name);
   }
 
   /**
