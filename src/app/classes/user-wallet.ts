@@ -73,18 +73,28 @@ export class UserWallet {
       return ibc_address;
     }
 
-    const value: string      = ibc_address.slice(4);
-    const chain_name: string = CHAIN_DATA[COIN_CODES.ULUNA]['cosmos_name'];
-    const uri: string        = 'https://rest.cosmos.directory/' + chain_name + '/ibc/apps/transfer/v1/denom_traces/' + value;
+    // Check if this lookup is already in the local storage object
+    var cached_ibc:IBCAddress | undefined = this.denom_service.getDenomByIBC(ibc_address);
+    
+    if (cached_ibc == undefined){
+      const value: string      = ibc_address.slice(4);
+      const chain_name: string = CHAIN_DATA[COIN_CODES.ULUNA]['cosmos_name'];
+      const uri: string        = 'https://rest.cosmos.directory/' + chain_name + '/ibc/apps/transfer/v1/denom_traces/' + value;
 
-    if (this.request_service != undefined){
-      const denom_name = await this.request_service!.getRequest(uri).then((name: any) => {
-        return name;
-      });
+      if (this.request_service != undefined){
+        const denom_name = await this.request_service!.getRequest(uri).then((name: any) => {
+          return name;
+        });
 
-      return denom_name;
+        // Add this denom to the saved list:
+        this.denom_service.addDenom(ibc_address, denom_name)
+
+        return denom_name;
+      } else {
+        return ibc_address;
+      }
     } else {
-      return ibc_address;
+      return cached_ibc.denom;
     }
   }
 
