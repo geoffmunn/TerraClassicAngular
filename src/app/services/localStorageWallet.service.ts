@@ -151,10 +151,6 @@ export class LocalStorageWallet {
 
     var denom_list = this.getAllDenoms();
     
-    console.log ('looking for:', ibc_name)
-    console.log (denom_list);
-    console.log ('result:', denom_list.find((denom) => denom.ibc_name === ibc_name))
-
     return denom_list.find((denom) => denom.ibc_name === ibc_name);
   }
 
