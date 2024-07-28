@@ -1,13 +1,13 @@
-import {Component, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {ActivatedRoute, NavigationEnd, Router, RouterModule} from '@angular/router';
-import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
-import { PersistablesService } from '../services/persistables.service';
-import { ModalWalletPassword } from '../admin/wallet-password/wallet-password.component';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddressBookService } from '../services/addressBook.service';
 import { Address } from '../interfaces/address';
+import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { BasicConfirmComponent } from '../modals/basic-confirm/basic-confirm.component';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ModalWalletPassword } from '../admin/wallet-password/wallet-password.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { PersistablesService } from '../services/persistables.service';
 
 @Component({
   selector: 'app-address-book-details',
