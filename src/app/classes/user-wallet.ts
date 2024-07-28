@@ -1,22 +1,49 @@
-import { LocalWallet } from '../interfaces/localWallet';
 import { LCDClient, Coins, MnemonicKey } from '@geoffmunn/feather.js';
 import { Pagination, PaginationOptions } from '@geoffmunn/feather.js/dist/client/lcd/APIRequester';
 import { WalletCoin } from '../interfaces/walletCoin';
 import { RequestService } from '../services/request.service';
 import { CHAIN_DATA, COIN_CODES, FULL_COIN_LOOKUP, NON_ULUNA_COINS, COIN_ALIASES } from '../constants'
 import { BalancesService } from '../services/balances.service';
-import { LocalStorage } from '../classes/local-storage';
+import { LocalStorageWallet } from '../services/localStorageWallet.service';
+import { IBCAddress } from '../interfaces/ibcAddress';
 
 export class UserWallet {
 
-  protected local_storage: LocalStorage   = new LocalStorage();
   private request_service: RequestService | undefined
   private terra: LCDClient;
   
-  public balances: BalancesService  = new BalancesService();
-  public key: string                = '';
-  public wallet_list: LocalWallet[] = [];
-  
+  public denom_service: LocalStorageWallet = new LocalStorageWallet();
+  public balances: BalancesService         = new BalancesService();
+  public address: string                   = ''
+
+  constructor(private rs:RequestService|undefined = undefined) {
+
+    var config = {
+      'columbus-5': {
+        lcd: 'https://terra-classic-fcd.publicnode.com',
+        chainID: 'columbus-5',
+        gasAdjustment: 1.75,
+        gasPrices: { uluna: 0.015 },
+        prefix: 'terra', // bech32 prefix, used by the LCD to understand which is the right chain to query
+      },
+    };
+    
+    this.terra = new LCDClient(config);
+
+    this.request_service = rs
+  }
+
+  /**
+   * Set up the basic wallet object given the seed.
+   * 
+   * @param seed 
+   */
+  public async create(seed: string){
+    this.address = this.createAddressFromSeed(seed);
+
+    this.balances = await this.getBalances(this.address)
+  }
+
   /**
    * Based on the provided seed phrase, generate a valid address.
    * The seed needs to be passed as an attribute because it might be user-provided (the 'new wallet' function)
@@ -55,28 +82,20 @@ export class UserWallet {
    * @returns string
    */
   async denomTrace(ibc_address: string):Promise<string> {
-    // """
-    // Based on the wallet prefix, get the IBC denom trace details for this IBC address.
-    // This is a slow process, so we do two things:
-    // First, check the cached results in memory.
-    // Second, check the database.
-    // Third, go and get the actual result.
-    
-    // @params:
-    //     - ibc_address: the full address - should start with ibc/
-        
-    // @return: the string-based denomination that this resolves to
-    // """
-
     // First, if this is not even an IBC address, then return the original value:
-    if (ibc_address.slice(0,4).toLowerCase() != 'ibc/'){
+    // if (ibc_address.slice(0,4).toLowerCase() != 'ibc/'){
+    //   return ibc_address;
+    // }
+
+    if (!this.isIBC(ibc_address)){
       return ibc_address;
     }
 
     // Check if this lookup is already in the local storage object
     var cached_ibc:IBCAddress | undefined = this.denom_service.getDenomByIBC(ibc_address);
-    
+
     if (cached_ibc == undefined){
+
       const value: string      = ibc_address.slice(4);
       const chain_name: string = CHAIN_DATA[COIN_CODES.ULUNA]['cosmos_name'];
       const uri: string        = 'https://rest.cosmos.directory/' + chain_name + '/ibc/apps/transfer/v1/denom_traces/' + value;
@@ -168,12 +187,21 @@ export class UserWallet {
           let key              = Object.keys(COIN_CODES).find(key => COIN_CODES[key] === denom_result);
           let formatted_amount = this.formatAmountToReadable(Number(coin_list[i].amount), denom_result);
 
+          if (this.isIBC(coin_list[i].denom)){
+            readable = 'ibc/'
+          }
+
           if (key !== undefined){
+            var readable:string = FULL_COIN_LOOKUP[key];
+            if (this.isIBC(coin_list[i].denom)){
+              readable = 'ibc/' + readable
+            }
+
             var coin: WalletCoin = {
               amount: Number(coin_list[i].amount),
               denom: denom_result,
               formatted: formatted_amount,
-              readable: FULL_COIN_LOOKUP[key],
+              readable: readable,
               wallet_id: 0
             };
 
@@ -208,20 +236,18 @@ export class UserWallet {
     return this.balances;
   }
 
-  constructor(private rs:RequestService|undefined = undefined) {
+  /**
+   * Check if this is an IBC address.
+   * @param address 
+   * 
+   * @returns boolean
+   */
+  isIBC(address:string): boolean {
 
-    var config = {
-      'columbus-5': {
-        lcd: 'https://terra-classic-fcd.publicnode.com',
-        chainID: 'columbus-5',
-        gasAdjustment: 1.75,
-        gasPrices: { uluna: 0.015 },
-        prefix: 'terra', // bech32 prefix, used by the LCD to understand which is the right chain to query
-      },
-    };
-    
-    this.terra = new LCDClient(config);
-
-    this.request_service = rs
+    if (address.slice(0,4).toLowerCase() == 'ibc/'){
+      return true;
+    } else {
+      return false;
+    }
   }
 }
