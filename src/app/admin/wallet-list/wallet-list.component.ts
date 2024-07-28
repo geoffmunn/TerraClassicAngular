@@ -1,13 +1,13 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { LocalStorageWallet } from '../../services/localStorageWallet.service';
 import { BalancesService } from '../../services/balances.service';
+import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { LocalStorageWallet } from '../../services/localStorageWallet.service';
+import { RequestService } from '../../services/request.service';
+import { RouterModule } from '@angular/router';
+import { UserWallet } from '../../classes/user-wallet';
 import { WalletCoin } from '../../interfaces/walletCoin';
 
 import _ from 'lodash';
-import { RouterModule } from '@angular/router';
-import { UserWallet } from '../../classes/user-wallet';
-import { RequestService } from '../../services/request.service';
 
 @Component({
   selector: 'app-wallet-list',
