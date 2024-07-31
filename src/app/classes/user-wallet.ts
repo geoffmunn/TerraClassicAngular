@@ -41,7 +41,7 @@ export class UserWallet {
   public async create(seed: string){
     this.address = this.createAddressFromSeed(seed);
 
-    this.balances = await this.getBalances(this.address)
+    this.balances = await this.getBalances(this.address, 0)
   }
 
   /**
@@ -168,7 +168,7 @@ export class UserWallet {
    * @param address 
    * @returns BalancesService
    */
-  async getBalances(address: string): Promise<BalancesService> {
+  async getBalances(address: string, wallet_id: number): Promise<BalancesService> {
 
     // LCD understand automatically the chain to query using the bech32 prefix of the address
     //const pagOpt:PaginationOptions = Pagination(limit=50, count_total=True)
@@ -202,7 +202,7 @@ export class UserWallet {
               denom: denom_result,
               formatted: formatted_amount,
               readable: readable,
-              wallet_id: 0
+              wallet_id: wallet_id
             };
 
             this.balances.balances.set(denom_result, coin);
@@ -225,7 +225,7 @@ export class UserWallet {
             denom: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]],
             formatted: formatted_amount,
             readable: COIN_ALIASES[NON_ULUNA_COINS[keys[i]]],
-            wallet_id: 0
+            wallet_id: wallet_id
           };
 
           this.balances.balances.set(COIN_ALIASES[NON_ULUNA_COINS[keys[i]]], coin);
