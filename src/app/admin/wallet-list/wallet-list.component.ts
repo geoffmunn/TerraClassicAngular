@@ -8,6 +8,7 @@ import { UserWallet } from '../../classes/user-wallet';
 import { WalletCoin } from '../../interfaces/walletCoin';
 
 import _ from 'lodash';
+import { LocalWallet } from '../../interfaces/localWallet';
 
 @Component({
   selector: 'app-wallet-list',
@@ -55,18 +56,20 @@ export class WalletListComponent {
   private async get_wallet_balances(){
     
     const user_wallet:UserWallet  = new UserWallet(this.request_service);
+    
     user_wallet.denom_service.key = this.wallet_service.key;
 
     // Get the raw balances for each wallet and attach it to the object
     for (var i = 0; i < this.wallet_service.wallet_list.length; i++){
       if (i in this.wallet_service.wallet_list){
-        var balances: BalancesService = await user_wallet.getBalances(this.wallet_service.wallet_list[i].address);
+        var balances: BalancesService = await user_wallet.getBalances(this.wallet_service.wallet_list[i].address, this.wallet_service.wallet_list[i].id);
 
         balances.balances.forEach((item:WalletCoin) => {
           this._all_coins[item.denom] = item;
         })
 
-        this._wallet_balances[this.wallet_service.wallet_list[i].name] = _.cloneDeep(balances.balances);
+        //this._wallet_balances[this.wallet_service.wallet_list[i].name] = _.cloneDeep(balances.balances);
+        this._wallet_balances[this.wallet_service.wallet_list[i].id] = _.cloneDeep(balances.balances);
       }
     }
 
@@ -124,7 +127,9 @@ export class WalletListComponent {
     result           = this.all_coins[coin_denom];
     result.wallet_id = wallet_id;
 
-    this.selectedWalletCoin.emit(this.all_coins[coin_denom]);
+    let selected_wallet:LocalWallet = this.wallet_service.getWalletById(wallet_id)!;
+
+    this.selectedWalletCoin.emit(this.wallet_balances[selected_wallet.id].get(coin_denom));
   }
 
   constructor() {}
