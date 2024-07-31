@@ -15,6 +15,17 @@
     <p>
         <span class="text-danger">This transaction can not be undone.</span>
     </p>
+    <p>
+    @if (send_tx_fee_coins != undefined){
+        You has a fee!
+
+        <ul>
+        @for(coin of send_tx_fee_coins; track $index){
+            <li>{{ coin.formatted }} {{ coin.readable }}</li>
+        }
+        </ul>
+    }
+    </p>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>

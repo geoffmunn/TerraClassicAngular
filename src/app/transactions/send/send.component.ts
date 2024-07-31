@@ -142,38 +142,69 @@ export class SendComponent {
       
       const confirm_send = this.modal_service.open(ConfirmSendComponent);
 
-      confirm_send.componentInstance.readable_amount = result.formatted + ' ' + result.readable;
+      confirm_send.componentInstance.readable_amount   = result.formatted + ' ' + result.readable;
       confirm_send.componentInstance.recipient_address = this.selected_address;
 
+      // Simulate the transaction and display the fee:
+        // We now have a wallet in the coin object
+      // Create a Wallet object and pass this to the sendTransaction service
+
+      let local_wallet = this.local_wallet_service.getWalletById(this.coin.wallet_id);
+      
+      if (local_wallet != undefined){
+
+        
+        // We need to send a simulation request
+        // We need to create a wallet item that holds the necessary information
+        this.user_wallet.create(local_wallet.seed).then(value => {
+      
+          // Now we have the wallet, we can go and do a simulation and so forth...
+          
+          var send_tx = new SendTransaction();
+          send_tx.create(local_wallet.seed)
+          var send_coin:Coin = new Coin(result.denom!, result.amount!)
+          
+          send_tx.simulate(this.user_wallet, this.selected_address, send_coin).then((value:SendTransaction) => {
+            confirm_send.componentInstance.send_tx_fee = value.fee;
+          })
+
+        })
+      }
       confirm_send.result.then(() => {
         console.log('When user closes'); 
 
-        console.log (this.coin)
-        // We now have a wallet in the coin object
-        // Create a Wallet object and pass this to the sendTransaction service
+        // console.log (this.coin)
+        // // We now have a wallet in the coin object
+        // // Create a Wallet object and pass this to the sendTransaction service
 
-        let local_wallet = this.local_wallet_service.getWalletById(this.coin.wallet_id);
+        // let local_wallet = this.local_wallet_service.getWalletById(this.coin.wallet_id);
 
-        console.log ('local wallet:', local_wallet)
+        // console.log ('local wallet:', local_wallet)
         
-        if (local_wallet != undefined){
+        // if (local_wallet != undefined){
 
           
-          // We need to send a simulation request
-          // We need to create a wallet item that holds the necessary information
-          this.user_wallet.create(local_wallet.seed).then(value => {
-            console.log ('finished value:', value)
-            console.log ('finished!')
-            console.log ('uluna balance:', this.user_wallet.balances.balances.get('uluna'))
+        //   // We need to send a simulation request
+        //   // We need to create a wallet item that holds the necessary information
+        //   this.user_wallet.create(local_wallet.seed).then(value => {
+        //     console.log ('finished value:', value)
+        //     console.log ('finished!')
+        //     console.log ('uluna balance:', this.user_wallet.balances.balances.get('uluna'))
 
-            // Now we have the wallet, we can go and do a simulation and so forth...
+        //     // Now we have the wallet, we can go and do a simulation and so forth...
             
-            var send_tx = new SendTransaction();
-            var send_coin:Coin = new Coin(result.denom!, result.amount!)
-            send_tx.simulate(this.user_wallet, this.selected_address, send_coin)
-          })
+        //     var send_tx = new SendTransaction();
+        //     console.log ('creating send tx object')
+        //     send_tx.create(local_wallet.seed)
+        //     var send_coin:Coin = new Coin(result.denom!, result.amount!)
+            
+        //     console.log('starting simulation')
+        //     send_tx.simulate(this.user_wallet, this.selected_address, send_coin)
+        //   })
 
-          console.log ('outer finished!')
+        //   console.log ('outer finished! All internal functions from here.')
+
+
           // console.log ('balances:', this.user_wallet.balances.balances.get('uluna'))
 
 
@@ -210,7 +241,7 @@ export class SendComponent {
           // var wallet1:WalletItem = new this.wallet_item_service()
           // wallet1.create(local_wallet.seed)
           // console.log ('wallet 1:', wallet1.address)
-        }
+        //}
         //let send_tx = new sendTransaction()
         //send_tx.create()
       }, 
