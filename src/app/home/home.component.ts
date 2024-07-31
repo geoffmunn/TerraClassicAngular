@@ -26,7 +26,6 @@ export class HomeComponent {
   public persistables:PersistablesService     = inject(PersistablesService);
 
   public decryption_password: string      = '';
-  public selected_wallet_id: number       = 0;
   public selected_wallet_coin: WalletCoin = {} as WalletCoin;
 
   public address_list: Address[]           = [];
@@ -37,7 +36,6 @@ export class HomeComponent {
    */
   selectWalletCoin(wallet_coin:WalletCoin){
     this.selected_wallet_coin = wallet_coin;
-    this.selected_wallet_id   = wallet_coin.wallet_id!;
 
     // Reset the address list so it doesn't get bigger with every click
     this.address_list = []
